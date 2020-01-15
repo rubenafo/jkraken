@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AssetPairManager {
+public class AssetPairs {
 
     private Map<String, AssetPair> result;
 }
