@@ -31,7 +31,17 @@ public class JKraken {
         return tickers;
     }
 
-    private static OHLCData getOHLC (String pair, int interval, int since) {
+    public static OHLCValues getOHLC (int interval, int since, String... pairs) {
+        var url = "https://api.kraken.com/0/public/OHLC";
+        if (pairs.length > 0) {
+            url = StringUtils.join(url, "?pair=", StringUtils.join(pairs, ","));
+        }
+        String fullUrl = String.format("%s&interval=%s", url, interval);
+        return new RestTemplate().getForEntity(fullUrl, OHLCValues.class).getBody();
+    }
 
+    public static Depth getDepth (String pair, int count) {
+        var url = String.format("https://api.kraken.com/0/public/Depth?pair=%s&count=%s", pair, count);
+        return new RestTemplate().getForEntity(url, Depth.class).getBody();
     }
 }

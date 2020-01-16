@@ -6,7 +6,8 @@ import lombok.var;
 public class Example {
 
 	public static void main(String[] args) {
-		var ticker = JKraken.getTicker("BATUSD");
-		System.out.println(ticker);
+
+		var ohlc = JKraken.getDepth("BATUSD", 5);
+		System.out.println(ohlc);
 	}
 }
