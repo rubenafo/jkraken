@@ -3,7 +3,10 @@ package com.jkraken.api;
 import com.jkraken.entities.*;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
 
 public class JKraken {
 
@@ -43,5 +46,10 @@ public class JKraken {
     public static Depth getDepth (String pair, int count) {
         var url = String.format("https://api.kraken.com/0/public/Depth?pair=%s&count=%s", pair, count);
         return new RestTemplate().getForEntity(url, Depth.class).getBody();
+    }
+
+    public void test () {
+        var headers = new HttpHeaders();
+        new RestTemplate().headForHeaders("", headers);
     }
 }

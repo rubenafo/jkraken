@@ -1,12 +1,12 @@
 package com.jkraken;
 
-import com.jkraken.api.JKraken;
-import lombok.var;
+import com.jkraken.utils.LocalPropLoader;
+
+import java.io.IOException;
 
 public class Example {
 
 	public static void main(String[] args) {
-
-		
+		System.out.println(new LocalPropLoader().getPrivAPI());
 	}
 }
