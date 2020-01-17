@@ -1,27 +1,42 @@
 package com.jkraken.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.var;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 public class Depth {
 
+    private String pair;
     List<double[]> asks; // <price>, <volume>, <timestamp>
     List<double[]> bids; // <price>, <volume>, <timestamp>
 
-    public Depth (@JsonProperty("result") Map<String, Object> result) {
-        var askList = (List<List<Object>>) result.get("asks");
-        asks = new ArrayList<>();
-        askList.forEach( i -> {
-            double[] a = {(double) i.get(0), (double) i.get(1), (double) i.get(2)};
-        });
-
-        var bidMap = result.get("bid");
-
+    @JsonCreator
+    public Depth (@JsonProperty("result") Map<String, Map<String,Object>> result) {
+        var pair = result.entrySet().stream().findFirst().get();
+        this.pair = pair.getKey();
+        var lists = pair.getValue();
+        var asks = (List) lists.get("asks");
+        var a = asks.stream().map(l -> {
+          var list = (List<Object>) l;
+          var values = list.stream().mapToDouble(i -> Double.parseDouble(i.toString())).boxed().collect(Collectors.toList());
+          return values;
+        }).collect(Collectors.toList());
+        this.asks = (List<double[]>) a;
+        var bids = (List) lists.get("bids");
+        var b = bids.stream().map(l -> {
+            var list = (List<Object>) l;
+            var values = list.stream().mapToDouble(i -> Double.parseDouble(i.toString())).boxed().collect(Collectors.toList());
+            return values;
+        }).collect(Collectors.toList());
+        this.bids = (List<double[]>) b;
     }
 }
