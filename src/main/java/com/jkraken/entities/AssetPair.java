@@ -1,7 +1,6 @@
 package com.jkraken.entities;
 
 import lombok.Data;
-import lombok.Value;
 
 import java.util.List;
 

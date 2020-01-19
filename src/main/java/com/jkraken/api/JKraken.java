@@ -1,14 +1,28 @@
 package com.jkraken.api;
 
 import com.jkraken.entities.*;
+import com.jkraken.entities.results.AccountBalanceInfo;
+import com.jkraken.utils.ApiSign;
+import com.jkraken.utils.LocalPropLoader;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class JKraken {
+
+    private LocalPropLoader properties;
+    private String apiKey;
+    private String apiSecret;
+
+    public JKraken () {
+        this.properties = new LocalPropLoader();
+        this.apiKey = properties.getApi();
+        this.apiSecret = properties.getApiSecret();
+    }
 
     public static ServerDate getTime () {
         var serverDate = new RestTemplate().getForEntity("https://api.kraken.com/0/public/Time", ServerDate.class).getBody();
@@ -48,8 +62,16 @@ public class JKraken {
         return new RestTemplate().getForEntity(url, Depth.class).getBody();
     }
 
-    public void test () {
+    public AccountBalanceInfo getAccountTrade () throws URISyntaxException {
+        var url = "https://api.kraken.com/0/private/Balance";
         var headers = new HttpHeaders();
-        new RestTemplate().headForHeaders("", headers);
+        long nonce = System.currentTimeMillis();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("API-Key", this.apiKey);
+        headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", "nonce="+nonce, this.apiSecret, "/0/private/Balance"));
+        headers.add("User-Agent", "Kraken REST API - 0");
+        var requestsEntity = new RequestEntity<String>("nonce="+nonce, headers, HttpMethod.POST, new URI(url));
+        ResponseEntity<AccountBalanceInfo> response = new RestTemplate().postForEntity(url, requestsEntity, AccountBalanceInfo.class);
+        return response.getBody();
     }
 }

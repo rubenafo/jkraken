@@ -13,7 +13,7 @@ public class LocalPropLoader
 
     public LocalPropLoader () {
         this.props = new Properties();
-        var inputStream = getClass().getClassLoader().getResourceAsStream("application.properties");
+        var inputStream = getClass().getClassLoader().getResourceAsStream("jkraken.properties");
         if (inputStream != null) {
             try {
                 props.load(inputStream);
@@ -25,7 +25,8 @@ public class LocalPropLoader
         }
     }
 
-    public String getPrivAPI () {
+    public String getApi () { return this.props.getProperty("api");}
+    public String getApiSecret () {
         return this.props.getProperty("papi");
     }
 }
