@@ -2,15 +2,13 @@ package com.jkraken.api;
 
 import com.jkraken.entities.*;
 import com.jkraken.entities.results.AccountBalanceInfo;
+import com.jkraken.entities.results.TradeBalanceInfo;
 import com.jkraken.utils.ApiSign;
 import com.jkraken.utils.LocalPropLoader;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class JKraken {
 
@@ -62,16 +60,19 @@ public class JKraken {
         return new RestTemplate().getForEntity(url, Depth.class).getBody();
     }
 
-    public AccountBalanceInfo getAccountTrade () throws URISyntaxException {
-        var url = "https://api.kraken.com/0/private/Balance";
-        var headers = new HttpHeaders();
-        long nonce = System.currentTimeMillis();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("API-Key", this.apiKey);
-        headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", "nonce="+nonce, this.apiSecret, "/0/private/Balance"));
-        headers.add("User-Agent", "Kraken REST API - 0");
-        var requestsEntity = new RequestEntity<String>("nonce="+nonce, headers, HttpMethod.POST, new URI(url));
+    public AccountBalanceInfo getAccountTrade () {
+        ApiSign.availableKeys(this.properties);
+        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.PRIVATE_BALANCE;
+        var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.PRIVATE_BALANCE, this.properties);
         ResponseEntity<AccountBalanceInfo> response = new RestTemplate().postForEntity(url, requestsEntity, AccountBalanceInfo.class);
+        return response.getBody();
+    }
+
+    public TradeBalanceInfo getTradeBalance () {
+        ApiSign.availableKeys(this.properties);
+        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.PRIVATE_TRADE_BALANCE;
+        var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.PRIVATE_TRADE_BALANCE, this.properties);
+        ResponseEntity<TradeBalanceInfo> response = new RestTemplate().postForEntity(url, requestsEntity, TradeBalanceInfo.class);
         return response.getBody();
     }
 }

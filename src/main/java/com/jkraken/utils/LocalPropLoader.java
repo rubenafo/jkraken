@@ -1,9 +1,11 @@
 package com.jkraken.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.var;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
 
 @Data
@@ -13,7 +15,7 @@ public class LocalPropLoader
 
     public LocalPropLoader () {
         this.props = new Properties();
-        var inputStream = getClass().getClassLoader().getResourceAsStream("jkraken.properties");
+        var inputStream = getClass().getClassLoader().getResourceAsStream("jk.properties");
         if (inputStream != null) {
             try {
                 props.load(inputStream);
@@ -21,12 +23,19 @@ public class LocalPropLoader
                 e.printStackTrace();
             }
         } else {
-            throw new RuntimeException("not found in the classpath");
+            throw new RuntimeException("Key file not found in the classpath");
+        }
+        if (!keysFound()) {
+            System.out.println("Keys couldn't be found in key file. Private methods won't work");
         }
     }
 
     public String getApi () { return this.props.getProperty("api");}
     public String getApiSecret () {
         return this.props.getProperty("papi");
+    }
+
+    public boolean keysFound () {
+        return this.getApi() != null && this.getApiSecret() != null;
     }
 }

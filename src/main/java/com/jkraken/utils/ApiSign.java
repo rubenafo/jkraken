@@ -2,9 +2,15 @@ package com.jkraken.utils;
 
 import lombok.var;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 
 public class ApiSign {
@@ -20,5 +26,24 @@ public class ApiSign {
             signature = new String(Base64.encodeBase64(mac.doFinal(md.digest())));
         } catch(Exception e) {}
         return signature;
+    }
+
+    public static RequestEntity<String> getRequest (String url, String path, LocalPropLoader props) {
+        var headers = new HttpHeaders();
+        long nonce = System.currentTimeMillis();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.add("API-Key", props.getApi());
+        headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", "nonce="+nonce, props.getApiSecret(), path));
+        headers.add("User-Agent", "Kraken REST API - 0");
+        try {
+            return new RequestEntity<String>("nonce="+nonce, headers, HttpMethod.POST, new URI(url));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public static void availableKeys(LocalPropLoader properties) {
+        if (!properties.keysFound())
+            throw new RuntimeException("Missing auth keys, private API request won't work");
     }
 }
