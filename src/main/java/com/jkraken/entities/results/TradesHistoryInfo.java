@@ -1,9 +1,6 @@
 package com.jkraken.entities.results;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.var;
 
 import java.util.List;
 import java.util.Map;
@@ -12,11 +9,13 @@ import java.util.Map;
 public class TradesHistoryInfo {
 
     private List<String> error;
-    private Map<String, TradesHistoryItem> result;
+    private TradeHistoryContent result;
 
-    @JsonCreator
-    public TradesHistoryInfo (@JsonProperty("error") List<String> error, @JsonProperty("result") Map<String, Object> result) {
-        this.error = error;
-        var items = (Map<String, Object>) result.get("trades");
+    @Data
+    public class TradeHistoryContent {
+
+        private Map<String, TradesHistoryItem> trades;
+        private double count;
     }
+
 }

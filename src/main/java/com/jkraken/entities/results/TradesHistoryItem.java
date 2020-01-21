@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 public class TradesHistoryItem {
@@ -24,5 +23,5 @@ public class TradesHistoryItem {
     private BigDecimal fee;
     private double volume;
     private double margin;
-    private List<String> misc;
+    private Object misc;
 }

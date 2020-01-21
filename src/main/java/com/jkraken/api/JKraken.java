@@ -111,4 +111,12 @@ public class JKraken {
         ResponseEntity<TradesHistoryInfo> response = new RestTemplate().postForEntity(url, requestsEntity, TradesHistoryInfo.class);
         return response.getBody();
     }
+
+    public TradeVolumeInfo getTradeVolume() {
+        ApiSign.availableKeys(this.properties);
+        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.TRADE_VOLUME;
+        var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.TRADE_VOLUME, this.properties);
+        ResponseEntity<TradeVolumeInfo> response = new RestTemplate().postForEntity(url, requestsEntity, TradeVolumeInfo.class);
+        return response.getBody();
+    }
 }

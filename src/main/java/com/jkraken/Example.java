@@ -1,16 +1,14 @@
 package com.jkraken;
 
 import com.jkraken.api.JKraken;
-
-import java.time.LocalDate;
-import java.time.temporal.TemporalField;
-import java.util.Date;
+import lombok.var;
 
 public class Example {
 
 	public static void main(String[] args)  {
 		//System.out.println(new JKraken().getAccountTrade());
 		//System.out.println(new JKraken().getTradeBalance());
-		System.out.println(new JKraken().getTradesHistory());
+		var data = new JKraken().getTradeVolume();
+		System.out.println(data);
 	}
 }

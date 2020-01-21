@@ -10,4 +10,5 @@ public final class KrakenEndpoints {
     public static String CLOSED_ORDERS = "/0/private/ClosedOrders";
     public static String OPEN_POSITION = "/0/private/OpenPositions";
     public static String TRADES_HISTORY = "/0/private/TradesHistory";
+    public static String TRADE_VOLUME = "/0/private/TradeVolume";
 }
