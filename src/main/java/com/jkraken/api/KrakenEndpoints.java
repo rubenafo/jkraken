@@ -6,4 +6,8 @@ public final class KrakenEndpoints {
 
     public static String PRIVATE_BALANCE = "/0/private/Balance";
     public static String PRIVATE_TRADE_BALANCE = "/0/private/TradeBalance";
+    public static String OPEN_ORDERS = "/0/private/OpenOrders";
+    public static String CLOSED_ORDERS = "/0/private/ClosedOrders";
+    public static String OPEN_POSITION = "/0/private/OpenPositions";
+    public static String TRADES_HISTORY = "/0/private/TradesHistory";
 }

@@ -12,6 +12,10 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ApiSign {
 
@@ -29,14 +33,21 @@ public class ApiSign {
     }
 
     public static RequestEntity<String> getRequest (String url, String path, LocalPropLoader props) {
+        return getRequest(url, new HashMap<>(), path, props);
+    }
+
+    public static RequestEntity<String> getRequest (String url, Map<String,Object> formData, String path, LocalPropLoader props) {
         var headers = new HttpHeaders();
         long nonce = System.currentTimeMillis();
+        formData.put("nonce", nonce);
+        var data = formData.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue() + "&").collect(Collectors.joining());
+        System.out.println(data);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("API-Key", props.getApi());
-        headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", "nonce="+nonce, props.getApiSecret(), path));
+        headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", data, props.getApiSecret(), path));
         headers.add("User-Agent", "Kraken REST API - 0");
         try {
-            return new RequestEntity<String>("nonce="+nonce, headers, HttpMethod.POST, new URI(url));
+            return new RequestEntity<String>(data, headers, HttpMethod.POST, new URI(url));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e.getMessage());
         }
