@@ -1,5 +1,5 @@
 # jkraken
-A thin Java wrapper around [Kraken API](https://www.kraken.com/features/api)
+A thin & simple Java wrapper to interact with [Kraken API](https://www.kraken.com/features/api)
 
 ### Current support (WIP)
 
