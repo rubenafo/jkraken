@@ -4,6 +4,8 @@ public final class KrakenEndpoints {
 
     public static String BASE_API = "https://api.kraken.com";
 
+    public static String RECENT_TRADES = "/0/public/Trades";
+
     public static String PRIVATE_BALANCE = "/0/private/Balance";
     public static String PRIVATE_TRADE_BALANCE = "/0/private/TradeBalance";
     public static String OPEN_ORDERS = "/0/private/OpenOrders";

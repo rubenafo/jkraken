@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class JKraken {
 
@@ -59,6 +60,12 @@ public class JKraken {
     public static Depth getDepth (String pair, int count) {
         var url = String.format("https://api.kraken.com/0/public/Depth?pair=%s&count=%s", pair, count);
         return new RestTemplate().getForEntity(url, Depth.class).getBody();
+    }
+
+    public static RecentTradesInfo getRecentTrades (String pair, long tradeId) {
+        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.RECENT_TRADES;
+        url = StringUtils.join(url, "?pair=", pair);
+        return new RestTemplate().getForEntity(url, RecentTradesInfo.class).getBody();
     }
 
     public AccountBalanceInfo getAccountTrade () {
@@ -112,10 +119,12 @@ public class JKraken {
         return response.getBody();
     }
 
-    public TradeVolumeInfo getTradeVolume() {
+    public TradeVolumeInfo getTradeVolume(String ...pairs) {
         ApiSign.availableKeys(this.properties);
+        var data = new HashMap<String,Object>();
+        data.put("pair", StringUtils.join(pairs,","));
         var url = KrakenEndpoints.BASE_API + KrakenEndpoints.TRADE_VOLUME;
-        var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.TRADE_VOLUME, this.properties);
+        var requestsEntity = ApiSign.getRequest(url, data, KrakenEndpoints.TRADE_VOLUME, this.properties);
         ResponseEntity<TradeVolumeInfo> response = new RestTemplate().postForEntity(url, requestsEntity, TradeVolumeInfo.class);
         return response.getBody();
     }

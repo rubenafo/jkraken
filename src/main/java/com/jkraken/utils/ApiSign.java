@@ -1,6 +1,7 @@
 package com.jkraken.utils;
 
 import lombok.var;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,7 +13,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,9 +39,7 @@ public class ApiSign {
     public static RequestEntity<String> getRequest (String url, Map<String,Object> formData, String path, LocalPropLoader props) {
         var headers = new HttpHeaders();
         long nonce = System.currentTimeMillis();
-        formData.put("nonce", nonce);
         var data = formData.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue() + "&").collect(Collectors.joining());
-        System.out.println(data);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("API-Key", props.getApi());
         headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", data, props.getApiSecret(), path));
