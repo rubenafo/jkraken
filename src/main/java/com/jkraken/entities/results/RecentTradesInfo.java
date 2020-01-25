@@ -19,7 +19,7 @@ public class RecentTradesInfo {
     public class RecentTradesInfoElem {
         private BigDecimal price;
         private double volume;
-        private double time;
+        private long time;
         private String buySell;  // B | S
         private String marketLimit;  // M | L
     }
@@ -38,7 +38,7 @@ public class RecentTradesInfo {
                     var items = values.stream().map(e -> new RecentTradesInfoElem(
                             new BigDecimal((String) e.get(0)),
                             Double.valueOf((String) e.get(1)),
-                            (double) e.get(2),
+                            (long) Double.parseDouble(e.get(2).toString()),
                             (String) e.get(3),
                             (String) e.get(4)))
                             .collect(Collectors.toList());

@@ -10,37 +10,31 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
-import java.util.Map;
+
+import static com.jkraken.api.KrakenEndpoints.*;
 
 public class JKraken {
 
-    private LocalPropLoader properties;
-    private String apiKey;
-    private String apiSecret;
+    private final LocalPropLoader properties;
 
     public JKraken () {
         this.properties = new LocalPropLoader();
-        this.apiKey = properties.getApi();
-        this.apiSecret = properties.getApiSecret();
     }
 
-    public static ServerDate getTime () {
-        var serverDate = new RestTemplate().getForEntity("https://api.kraken.com/0/public/Time", ServerDate.class).getBody();
-        return serverDate;
+    public static ServerDateInfo getTime () {
+        return new RestTemplate().getForEntity(KrakenEndpoints.url(SERVER_TIME), ServerDateInfo.class).getBody();
     }
 
-    public static Asset getAssets () {
-        var assets = new RestTemplate().getForEntity("https://api.kraken.com/0/public/Assets", Asset.class).getBody();
-        return assets;
+    public static AssetInfo getAssets () {
+        return new RestTemplate().getForEntity(KrakenEndpoints.url(ASSET_INFO), AssetInfo.class).getBody();
     }
 
     public static AssetPairs getAssetPairs () {
-        var assetPairs = new RestTemplate().getForEntity("https://api.kraken.com/0/public/AssetPairs", AssetPairs.class).getBody();
-        return assetPairs;
+        return new RestTemplate().getForEntity(KrakenEndpoints.url(ASSET_PAIRS), AssetPairs.class).getBody();
     }
 
     public static Tickers getTicker (String... pairs) {
-        var url = "https://api.kraken.com/0/public/Ticker";
+        var url = KrakenEndpoints.url(TICKER_INFO);
         if (pairs.length > 0) {
             url = StringUtils.join(url, "?pair=", StringUtils.join(pairs, ","));
         }
@@ -62,9 +56,12 @@ public class JKraken {
         return new RestTemplate().getForEntity(url, Depth.class).getBody();
     }
 
-    public static RecentTradesInfo getRecentTrades (String pair, long tradeId) {
+    public static RecentTradesInfo getRecentTrades (String pair, long sinceTradeId) {
         var url = KrakenEndpoints.BASE_API + KrakenEndpoints.RECENT_TRADES;
         url = StringUtils.join(url, "?pair=", pair);
+        if (sinceTradeId != 1) {
+            url = StringUtils.join(url, "&since=", sinceTradeId);
+        }
         return new RestTemplate().getForEntity(url, RecentTradesInfo.class).getBody();
     }
 

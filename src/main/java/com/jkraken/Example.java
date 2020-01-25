@@ -9,7 +9,5 @@ public class Example {
 		//System.out.println(new JKraken().getAccountTrade());
 		//System.out.println(new JKraken().getTradeBalance());
 		//var data = new JKraken().getTradeVolume("XXBTZUSD", "XXBTZEUR");
-		var data = JKraken.getRecentTrades("XBTUSD", 1);
-		System.out.println(data);
 	}
 }

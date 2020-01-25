@@ -1,13 +1,14 @@
-package com.jkraken.entities;
+package com.jkraken.entities.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.jkraken.entities.AssetItem;
 import lombok.Data;
 
 import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ServerDate {
+public class AssetInfo {
 
-    private Map<String, Object> result;
+    private Map<String, AssetItem> result;
 }
