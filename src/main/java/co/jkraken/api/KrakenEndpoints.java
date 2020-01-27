@@ -19,6 +19,7 @@ public final class KrakenEndpoints {
     public static String OPEN_POSITION = "/0/private/OpenPositions";
     public static String TRADES_HISTORY = "/0/private/TradesHistory";
     public static String TRADE_VOLUME = "/0/private/TradeVolume";
+    public static String ADD_ORDER = "/0/private/AddOrder";
 
     public static String url (String path) {
         return BASE_API + path;

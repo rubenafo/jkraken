@@ -60,7 +60,7 @@ public class JKraken {
     }
 
     public static RecentTradesInfo getRecentTrades (String pair, long sinceTradeId) {
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.RECENT_TRADES;
+        var url = KrakenEndpoints.url(KrakenEndpoints.RECENT_TRADES);
         url = StringUtils.join(url, "?pair=", pair);
         if (sinceTradeId != 1) {
             url = StringUtils.join(url, "&since=", sinceTradeId);
@@ -70,7 +70,7 @@ public class JKraken {
 
     public AccountBalanceInfo getAccountTrade () {
         ApiSign.availableKeys(this.properties);
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.PRIVATE_BALANCE;
+        var url = KrakenEndpoints.url(KrakenEndpoints.PRIVATE_BALANCE);
         var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.PRIVATE_BALANCE, this.properties);
         ResponseEntity<AccountBalanceInfo> response = new RestTemplate().postForEntity(url, requestsEntity, AccountBalanceInfo.class);
         return response.getBody();
@@ -78,7 +78,7 @@ public class JKraken {
 
     public TradeBalanceInfo getTradeBalance () {
         ApiSign.availableKeys(this.properties);
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.PRIVATE_TRADE_BALANCE;
+        var url = KrakenEndpoints.url(KrakenEndpoints.PRIVATE_TRADE_BALANCE);
         var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.PRIVATE_TRADE_BALANCE, this.properties);
         ResponseEntity<TradeBalanceInfo> response = new RestTemplate().postForEntity(url, requestsEntity, TradeBalanceInfo.class);
         return response.getBody();
@@ -86,7 +86,7 @@ public class JKraken {
 
     public OpenOrdersInfo getOpenOrders () {
         ApiSign.availableKeys(this.properties);
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.OPEN_ORDERS;
+        var url = KrakenEndpoints.url(KrakenEndpoints.OPEN_ORDERS);
         var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.OPEN_ORDERS, this.properties);
         ResponseEntity<OpenOrdersInfo> response = new RestTemplate().postForEntity(url, requestsEntity, OpenOrdersInfo.class);
         return response.getBody();
@@ -97,7 +97,7 @@ public class JKraken {
         params.put("start", startTime);
         params.put("end", endTime);
         ApiSign.availableKeys(this.properties);
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.CLOSED_ORDERS;
+        var url = KrakenEndpoints.url(KrakenEndpoints.CLOSED_ORDERS);
         var requestsEntity = ApiSign.getRequest(url, params, KrakenEndpoints.CLOSED_ORDERS, this.properties);
         ResponseEntity<ClosedOrdersInfo> response = new RestTemplate().postForEntity(url, requestsEntity, ClosedOrdersInfo.class);
         return response.getBody();
@@ -105,7 +105,7 @@ public class JKraken {
 
     public OpenPositionsInfo getOpenPositions () {
         ApiSign.availableKeys(this.properties);
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.OPEN_POSITION;
+        var url = KrakenEndpoints.url(KrakenEndpoints.OPEN_POSITION);
         var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.OPEN_POSITION, this.properties);
         ResponseEntity<OpenPositionsInfo> response = new RestTemplate().postForEntity(url, requestsEntity, OpenPositionsInfo.class);
         return response.getBody();
@@ -113,7 +113,7 @@ public class JKraken {
 
     public TradesHistoryInfo getTradesHistory () {
         ApiSign.availableKeys(this.properties);
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.TRADES_HISTORY;
+        var url = KrakenEndpoints.url(KrakenEndpoints.TRADES_HISTORY);
         var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.TRADES_HISTORY, this.properties);
         ResponseEntity<TradesHistoryInfo> response = new RestTemplate().postForEntity(url, requestsEntity, TradesHistoryInfo.class);
         return response.getBody();
@@ -123,9 +123,14 @@ public class JKraken {
         ApiSign.availableKeys(this.properties);
         var data = new HashMap<String,Object>();
         data.put("pair", StringUtils.join(pairs,","));
-        var url = KrakenEndpoints.BASE_API + KrakenEndpoints.TRADE_VOLUME;
+        var url = KrakenEndpoints.url(KrakenEndpoints.TRADE_VOLUME);
         var requestsEntity = ApiSign.getRequest(url, data, KrakenEndpoints.TRADE_VOLUME, this.properties);
         ResponseEntity<TradeVolumeInfo> response = new RestTemplate().postForEntity(url, requestsEntity, TradeVolumeInfo.class);
         return response.getBody();
+    }
+
+    public void addOrder () {
+        ApiSign.availableKeys(this.properties);
+        var url = KrakenEndpoints.url(ADD_ORDER);
     }
 }
