@@ -1,9 +1,6 @@
 package co.jkraken.api;
 
-import co.jkraken.entities.AssetPairs;
-import co.jkraken.entities.Depth;
-import co.jkraken.entities.OHLCValues;
-import co.jkraken.entities.Tickers;
+import co.jkraken.entities.*;
 import co.jkraken.entities.results.*;
 import co.jkraken.utils.ApiSign;
 import co.jkraken.utils.LocalPropLoader;
@@ -19,9 +16,11 @@ import static co.jkraken.api.KrakenEndpoints.*;
 public class JKraken {
 
     private final LocalPropLoader properties;
+    private final RestTemplate restTemplate;
 
     public JKraken () {
         this.properties = new LocalPropLoader();
+        this.restTemplate = new RestTemplate();
     }
 
     public static ServerDateInfo getTime () {
@@ -129,8 +128,13 @@ public class JKraken {
         return response.getBody();
     }
 
-    public void addOrder () {
+    public AddOrderInfo addOrder (Order order) {
         ApiSign.availableKeys(this.properties);
+        var data = order.asMap();
         var url = KrakenEndpoints.url(ADD_ORDER);
+        var requestEntity = ApiSign.getRequest(url, data, ADD_ORDER, this.properties);
+        System.out.println(data);
+        ResponseEntity<AddOrderInfo> response = restTemplate.postForEntity(url, requestEntity, AddOrderInfo.class);
+        return response.getBody();
     }
 }

@@ -39,6 +39,7 @@ public class ApiSign {
         var headers = new HttpHeaders();
         long nonce = System.currentTimeMillis();
         var data = formData.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue() + "&").collect(Collectors.joining());
+        data += "nonce=" + nonce;
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("API-Key", props.getApi());
         headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", data, props.getApiSecret(), path));
