@@ -53,19 +53,35 @@ public class JKraken {
         return new RestTemplate().getForEntity(fullUrl, OHLCValues.class).getBody();
     }
 
-    public static Depth getDepth (String pair, int count) {
-        var url = String.format("https://api.kraken.com/0/public/Depth?pair=%s&count=%s", pair, count);
+    /**
+     * @param pair       asset pair
+     * @param maxAskBids maximum number of ask/bids
+     * @return
+     */
+    public static Depth getOrderBook(AssetPairsEnum.AssetPairs pair, int maxAskBids) {
+        var url = String.format("%s?pair=%s&count=%s", KrakenEndpoints.url(ORDER_BOOK), pair, maxAskBids);
         return new RestTemplate().getForEntity(url, Depth.class).getBody();
     }
 
-    public static RecentTradesInfo getRecentTrades (String pair, long sinceTradeId) {
+    public static RecentTradesInfo getRecentTrades (AssetPairsEnum.AssetPairs pair, long sinceTradeId) {
         var url = KrakenEndpoints.url(KrakenEndpoints.RECENT_TRADES);
         url = StringUtils.join(url, "?pair=", pair);
-        if (sinceTradeId != 1) {
+        if (sinceTradeId != 0) {
             url = StringUtils.join(url, "&since=", sinceTradeId);
         }
         return new RestTemplate().getForEntity(url, RecentTradesInfo.class).getBody();
     }
+
+    public static SpreadInfo getSpread (AssetPairsEnum.AssetPairs pair, long sinceTradeId) {
+        var url = KrakenEndpoints.url(SPREAD_DATA);
+        url = StringUtils.join(url, "?pair=",pair);
+        if (sinceTradeId != 0) {
+            url = StringUtils.join(url, "&since=", sinceTradeId);
+        }
+        return new RestTemplate().getForEntity(url, SpreadInfo.class).getBody();
+    }
+
+    // private trading methods
 
     public AccountBalanceInfo getAccountTrade () {
         ApiSign.availableKeys(this.properties);
@@ -133,7 +149,6 @@ public class JKraken {
         var data = order.asMap();
         var url = KrakenEndpoints.url(ADD_ORDER);
         var requestEntity = ApiSign.getRequest(url, data, ADD_ORDER, this.properties);
-        System.out.println(data);
         ResponseEntity<AddOrderInfo> response = restTemplate.postForEntity(url, requestEntity, AddOrderInfo.class);
         return response.getBody();
     }

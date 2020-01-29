@@ -7,9 +7,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Data from https://api.kraken.com/0/private/Balance
- */
 @Data
 public class AccountBalanceInfo {
 

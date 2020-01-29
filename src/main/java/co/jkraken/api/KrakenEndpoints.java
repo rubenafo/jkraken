@@ -10,8 +10,10 @@ public final class KrakenEndpoints {
     public static String RECENT_TRADES = "/0/public/Trades";
     public static String ASSET_PAIRS = "/0/public/AssetPairs";
     public static String TICKER_INFO = "/0/public/Ticker";
+    public static String ORDER_BOOK = "/0/public/Depth";
+    public static String SPREAD_DATA = "/0/public/Spread";
 
-    // Private Endpoints
+    // private Endpoints
     public static String PRIVATE_BALANCE = "/0/private/Balance";
     public static String PRIVATE_TRADE_BALANCE = "/0/private/TradeBalance";
     public static String OPEN_ORDERS = "/0/private/OpenOrders";
