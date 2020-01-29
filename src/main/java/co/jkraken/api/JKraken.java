@@ -35,12 +35,12 @@ public class JKraken {
         return new RestTemplate().getForEntity(KrakenEndpoints.url(ASSET_PAIRS), AssetPairs.class).getBody();
     }
 
-    public static Tickers getTicker (String... pairs) {
+    public static TickersInfo getTicker (AssetPairsEnum.AssetPairs... pairs) {
         var url = KrakenEndpoints.url(TICKER_INFO);
         if (pairs.length > 0) {
             url = StringUtils.join(url, "?pair=", StringUtils.join(pairs, ","));
         }
-        var tickers = new RestTemplate().getForEntity(url, Tickers.class).getBody();
+        var tickers = new RestTemplate().getForEntity(url, TickersInfo.class).getBody();
         return tickers;
     }
 
