@@ -1,4 +1,4 @@
-package co.jkraken.utils;
+package co.jkraken.engine;
 
 import lombok.var;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -43,7 +43,7 @@ public class ApiSign {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("API-Key", props.getApi());
         headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", data, props.getApiSecret(), path));
-        headers.add("User-Agent", "Kraken REST API - 0");
+        headers.add("User-Agent", "Kraken REST API");
         try {
             return new RequestEntity<String>(data, headers, HttpMethod.POST, new URI(url));
         } catch (URISyntaxException e) {

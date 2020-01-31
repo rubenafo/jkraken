@@ -1,11 +1,9 @@
-package co.jkraken.utils;
+package co.jkraken.engine;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.var;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Properties;
 
 @Data

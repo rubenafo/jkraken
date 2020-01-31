@@ -2,8 +2,9 @@ package co.jkraken.api;
 
 import co.jkraken.entities.*;
 import co.jkraken.entities.results.*;
-import co.jkraken.utils.ApiSign;
-import co.jkraken.utils.LocalPropLoader;
+import co.jkraken.engine.ApiSign;
+import co.jkraken.engine.LocalPropLoader;
+import co.jkraken.engine.RateManager;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ public class JKraken {
 
     private final LocalPropLoader properties;
     private final RestTemplate restTemplate;
+    private final RateManager rateManager;
 
     public JKraken () {
         this.properties = new LocalPropLoader();
