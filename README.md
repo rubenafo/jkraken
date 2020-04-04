@@ -1,7 +1,3 @@
-
-## Superseeded by https://github.com/rubenafo/pkraken
---------------------
-
 # jkraken
 A thin & simple Java wrapper to interact with [Kraken API](https://www.kraken.com/features/api)
 
