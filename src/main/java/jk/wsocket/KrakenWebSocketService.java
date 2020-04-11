@@ -24,27 +24,16 @@ public class KrakenWebSocketService {
     private KrakenSession session;
 
     @PostConstruct
-    private void connect() {
+    protected boolean connect() {
         try {
             this.webSocketClient = new StandardWebSocketClient();
             var wsSession = webSocketClient.doHandshake(new KrakenWebSocketHandler(), new WebSocketHttpHeaders(), URI.create("wss://ws.kraken.com")).get();
             this.session = new KrakenSession(wsSession);
-            this.session.getSession().sendMessage(new TextMessage("{\"event\":\"ping\"}"));
-//            newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-//                try {
-//                    TextMessage message = new TextMessage("{\n" +
-//                            "  \"event\": \"ping\",\n" +
-//                            "  \"reqid\": 42\n" +
-//                            "}");
-//                    webSocketSession.sendMessage(message);
-//                    LOGGER.info("sent message - " + message.getPayload());
-//                } catch (Exception e) {
-//                    LOGGER.error("Exception while sending a message", e);
-//                }
-//            }, 1, 10, TimeUnit.SECONDS);
+            return this.session.getSession().isOpen();
         } catch (Exception e) {
             LOGGER.error("Exception while accessing websockets", e);
         }
+        return false;
     }
 
     public KrakenSession getSession () {
@@ -74,6 +63,25 @@ public class KrakenWebSocketService {
     public void ping() {
         try {
             this.session.getSession().sendMessage(new TextMessage("{\"event\":\"ping\"}"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean connectSession() {
+        var sessionStarted = this.session.getSession().isOpen();
+        if (!sessionStarted) {
+            sessionStarted = this.connect();
+        }
+        return sessionStarted;
+    }
+
+    public void unsubscribe(List<String> channelIds) {
+        var json = new ObjectMapper().createObjectNode();
+        json.put("event", "unsubscribe");
+        json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(channelIds));
+        try {
+            this.session.getSession().sendMessage(new TextMessage(json.toString()));
         } catch (IOException e) {
             e.printStackTrace();
         }

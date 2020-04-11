@@ -2,11 +2,14 @@ package jk.api;
 
 import jk.wsocket.KrakenWebSocketService;
 import lombok.NonNull;
+import lombok.val;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +26,7 @@ public class JKrakenAPI {
         this.krakenWs = krakenWs;
     }
 
-    @GetMapping ("/subscribe")
+    @PostMapping("/subscribe")
     public ResponseEntity<String> get (
             @RequestParam List<String> pairs,
             @RequestParam(defaultValue = "5") int interval,
@@ -37,13 +40,39 @@ public class JKrakenAPI {
         return ResponseEntity.ok("ok");
     }
 
+    @GetMapping("/subscribe")
+    public ResponseEntity<String> getSubscribe (
+            @RequestParam(required = false) Integer subscriptionId) {
+        return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping("/unsubscribe")
+    public ResponseEntity<String> unsubscribe (
+            @RequestParam List<String> pairs
+    ) {
+        LOGGER.debug("unsubscribe");
+        this.krakenWs.unsubscribe(pairs);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/ping")
     public ResponseEntity<String> ping () {
         this.krakenWs.ping();
         return ResponseEntity.ok("");
     }
 
-    @GetMapping ("/stop")
+    @PostMapping("/connect")
+    public ResponseEntity<String> connect () {
+        val success = this.krakenWs.connectSession();
+        if (success) {
+            return ResponseEntity.ok("{\"msg\": \"connected to Kraken\"}");
+        }
+        else {
+            return ResponseEntity.ok("{\"msg\": \"error connecting to Kraken\"}");
+        }
+    }
+
+    @PostMapping ("/close")
     public ResponseEntity<String> stop () {
         this.krakenWs.stop();
         return ResponseEntity.ok("");
