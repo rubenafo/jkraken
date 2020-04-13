@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
-import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import javax.annotation.PostConstruct;
@@ -20,14 +19,13 @@ import java.util.List;
 public class KrakenWebSocketService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWebSocketService.class);
-    private WebSocketClient webSocketClient;
     private KrakenSession session;
 
     @PostConstruct
     protected boolean connect() {
         try {
-            this.webSocketClient = new StandardWebSocketClient();
-            var wsSession = webSocketClient.doHandshake(new KrakenWebSocketHandler(), new WebSocketHttpHeaders(), URI.create("wss://ws.kraken.com")).get();
+            var webSocketClient = new StandardWebSocketClient();
+            var wsSession = webSocketClient.doHandshake(new KrakenWebSocketHandler(this), new WebSocketHttpHeaders(), URI.create("wss://ws.kraken.com")).get();
             this.session = new KrakenSession(wsSession);
             return this.session.getSession().isOpen();
         } catch (Exception e) {
@@ -44,7 +42,20 @@ public class KrakenWebSocketService {
         var json = new ObjectMapper().createObjectNode();
         json.put("event", "subscribe");
         json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(pairs));
-        json.putObject("subscription").put("name",name).put("interval", interval).put("depth", depth);
+        json.putObject("subscription").put("name",name);
+        System.out.println(json.toString());
+        try {
+            this.session.getSession().sendMessage(new TextMessage(json.toString()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void unsubscribe(List<String> channelIds) {
+        var json = new ObjectMapper().createObjectNode();
+        json.put("event", "unsubscribe");
+        json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(channelIds));
+        json.putObject("subscription").put("name","ticker");
         try {
             this.session.getSession().sendMessage(new TextMessage(json.toString()));
         } catch (IOException e) {
@@ -74,16 +85,5 @@ public class KrakenWebSocketService {
             sessionStarted = this.connect();
         }
         return sessionStarted;
-    }
-
-    public void unsubscribe(List<String> channelIds) {
-        var json = new ObjectMapper().createObjectNode();
-        json.put("event", "unsubscribe");
-        json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(channelIds));
-        try {
-            this.session.getSession().sendMessage(new TextMessage(json.toString()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
