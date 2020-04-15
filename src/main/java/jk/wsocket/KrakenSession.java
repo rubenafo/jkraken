@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jk.data.SessionData;
 import jk.wsocket.responses.ChannelAck;
+import jk.wsocket.responses.TickerData;
 import lombok.Value;
 import lombok.val;
 import org.springframework.web.socket.WebSocketSession;
@@ -32,6 +33,7 @@ public class KrakenSession {
                 val channelAck = this.jsonMapper.readValue(message, ChannelAck.class);
             } else if (obj instanceof List) {
                 val jsonList = (List) obj;
+                int channelId = (int) jsonList.get(0);
             }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
