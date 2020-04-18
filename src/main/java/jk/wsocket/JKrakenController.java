@@ -1,12 +1,11 @@
-package jk.api;
+package jk.wsocket;
 
-import jk.wsocket.KrakenWebSocketService;
+import jk.app.JsonUtils;
 import lombok.NonNull;
 import lombok.val;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,17 +16,17 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-public class JKrakenAPI {
+public class JKrakenController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JKrakenAPI.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JKrakenController.class);
     private final KrakenWebSocketService krakenWs;
 
-    public JKrakenAPI (@NonNull KrakenWebSocketService krakenWs) {
+    public JKrakenController(@NonNull KrakenWebSocketService krakenWs) {
         this.krakenWs = krakenWs;
     }
 
     @PostMapping("/subscribe")
-    public ResponseEntity<String> get (
+    public ResponseEntity<String> postSubscribe (
             @RequestParam List<String> pairs,
             @RequestParam(defaultValue = "5") int interval,
             @RequestParam(defaultValue = "10") int depth,
@@ -47,9 +46,7 @@ public class JKrakenAPI {
     }
 
     @GetMapping("/unsubscribe")
-    public ResponseEntity<String> unsubscribe (
-            @RequestParam List<String> pairs
-    ) {
+    public ResponseEntity<String> unsubscribe (@RequestParam List<String> pairs) {
         LOGGER.debug("unsubscribe");
         this.krakenWs.unsubscribe(pairs);
         return ResponseEntity.ok().build();
@@ -73,8 +70,14 @@ public class JKrakenAPI {
     }
 
     @PostMapping ("/close")
-    public ResponseEntity<String> stop () {
+    public ResponseEntity<String> close () {
         this.krakenWs.stop();
         return ResponseEntity.ok("");
+    }
+
+    @GetMapping ("/channels")
+    public ResponseEntity<String> channels () {
+        val userData = this.krakenWs.getSessionData();
+        return ResponseEntity.ok(JsonUtils.toJson(userData.getSubscriptionData()));
     }
 }

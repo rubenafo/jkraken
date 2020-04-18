@@ -1,41 +1,83 @@
 package jk.wsocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import jk.data.SessionData;
+import jk.wsocket.responses.ChannelMsg;
+import jk.wsocket.responses.TickerMsg;
+import lombok.Getter;
+import lombok.val;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @Service
-public class KrakenWebSocketService {
+public class KrakenWebSocketService extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWebSocketService.class);
-    private KrakenSession session;
+
+    @Getter
+    private SessionData sessionData;
+    private WebSocketSession wsSession;
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
+
+    public KrakenWebSocketService () {
+        this.sessionData = new SessionData();
+    }
 
     @PostConstruct
     protected boolean connect() {
         try {
             var webSocketClient = new StandardWebSocketClient();
-            var wsSession = webSocketClient.doHandshake(new KrakenWebSocketHandler(this), new WebSocketHttpHeaders(), URI.create("wss://ws.kraken.com")).get();
-            this.session = new KrakenSession(wsSession);
-            return this.session.getSession().isOpen();
+            this.wsSession = webSocketClient.doHandshake(this, new WebSocketHttpHeaders(), URI.create("wss://ws.kraken.com")).get();
+            return true;
         } catch (Exception e) {
             LOGGER.error("Exception while accessing websockets", e);
         }
         return false;
     }
 
-    public KrakenSession getSession () {
-        return this.session;
+    @Override
+    public void handleTextMessage(WebSocketSession session, TextMessage message) {
+        LOGGER.info("received message - " + message.getPayload());
+        String rawMsg = message.getPayload();
+        try {
+            Object obj = this.jsonMapper.readValue(rawMsg, Object.class);
+            if (obj instanceof Map) {
+                val channelAck = this.jsonMapper.readValue(rawMsg, ChannelMsg.class);
+                this.sessionData.append(channelAck, System.currentTimeMillis());
+            } else if (obj instanceof List) {
+                val jsonList = (List) obj;
+                int channelId = (int) jsonList.get(0);
+                val channelName = (String) jsonList.get(2);
+                val pair = (String) jsonList.get(3);
+                switch (channelName) {
+                    case "ticker":
+                        val tickerData = TickerMsg.fromMap(channelId, channelName, pair, (Map) jsonList.get(1));
+                        this.sessionData.append(tickerData, System.currentTimeMillis());
+                }
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) {
+        LOGGER.info("established connection - " + session);
     }
 
     public void subscribe(List<String> pairs, int interval, int depth, String name) {
@@ -45,7 +87,7 @@ public class KrakenWebSocketService {
         json.putObject("subscription").put("name",name);
         System.out.println(json.toString());
         try {
-            this.session.getSession().sendMessage(new TextMessage(json.toString()));
+            this.wsSession.sendMessage(new TextMessage(json.toString()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,7 +99,7 @@ public class KrakenWebSocketService {
         json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(channelIds));
         json.putObject("subscription").put("name","ticker");
         try {
-            this.session.getSession().sendMessage(new TextMessage(json.toString()));
+            this.wsSession.sendMessage(new TextMessage(json.toString()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,7 +107,7 @@ public class KrakenWebSocketService {
 
     public void stop() {
         try {
-            this.session.getSession().close();
+            this.wsSession.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,14 +115,14 @@ public class KrakenWebSocketService {
 
     public void ping() {
         try {
-            this.session.getSession().sendMessage(new TextMessage("{\"event\":\"ping\"}"));
+            this.wsSession.sendMessage(new TextMessage("{\"event\":\"ping\"}"));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public boolean connectSession() {
-        var sessionStarted = this.session.getSession().isOpen();
+        var sessionStarted = this.wsSession.isOpen();
         if (!sessionStarted) {
             sessionStarted = this.connect();
         }

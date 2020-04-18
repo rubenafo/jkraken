@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-public class TickerData {
+public class TickerMsg {
 
     private int channelId;
     private String channelName;
@@ -26,7 +26,7 @@ public class TickerData {
      */
     private List<Double> values;
 
-    public static TickerData fromMap(int channelId, String name, String pair, Map data) {
+    public static TickerMsg fromMap(int channelId, String name, String pair, Map data) {
         List<Double> values = Lists.newArrayList();
         ((List<Object>) data.get("a")).stream().forEach(v -> values.add(Double.parseDouble(v.toString())));
         ((List<Object>) data.get("b")).stream().forEach(v -> values.add(Double.parseDouble(v.toString())));
@@ -37,6 +37,6 @@ public class TickerData {
         ((List<Object>) data.get("l")).stream().forEach(v -> values.add(Double.parseDouble(v.toString())));
         ((List<Object>) data.get("h")).stream().forEach(v -> values.add(Double.parseDouble(v.toString())));
         ((List<Object>) data.get("o")).stream().forEach(v -> values.add(Double.parseDouble(v.toString())));
-        return new TickerData(channelId, name, pair, values);
+        return new TickerMsg(channelId, name, pair, values);
     }
 }
