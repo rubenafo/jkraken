@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChannelAck {
+public class ChannelMsg {
 
     private int channelId;
     private String channelName;
