@@ -1,5 +1,6 @@
 package jk.app;
 
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,6 +10,9 @@ import org.springframework.context.annotation.ComponentScan;
 public class JKrakenApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(JKrakenApp.class, args);
+
+        SpringApplication app = new SpringApplication(JKrakenApp.class);
+        app.setBannerMode(Banner.Mode.OFF);
+        app.run(args);
     }
 }

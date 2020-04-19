@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChannelMsg {
+public class SubscriptionStatusMsg {
 
-    private int channelId;
+    private int channelID;
     private String channelName;
     private String ticker;
     private String event;

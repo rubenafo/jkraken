@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import jk.data.SessionData;
-import jk.wsocket.responses.ChannelMsg;
+import jk.wsocket.responses.SubscriptionStatusMsg;
 import jk.wsocket.responses.TickerMsg;
 import lombok.Getter;
 import lombok.val;
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Service
 public class KrakenWebSocketService extends TextWebSocketHandler {
@@ -57,8 +58,16 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
         try {
             Object obj = this.jsonMapper.readValue(rawMsg, Object.class);
             if (obj instanceof Map) {
-                val channelAck = this.jsonMapper.readValue(rawMsg, ChannelMsg.class);
-                this.sessionData.append(channelAck, System.currentTimeMillis());
+                val eventType = (String) ((Map) obj).get("event");
+                switch (eventType) {
+                    case "ping": case "pong": case "heartbeat": break;
+                    case "subscriptionStatus":
+                        val subscribeMsg = this.jsonMapper.readValue(rawMsg, SubscriptionStatusMsg.class);
+                        this.sessionData.append(subscribeMsg, System.currentTimeMillis());
+                        break;
+                    default:
+                        LOGGER.debug("Error: ignoring unknown event type received={}", eventType);
+                }
             } else if (obj instanceof List) {
                 val jsonList = (List) obj;
                 int channelId = (int) jsonList.get(0);
@@ -66,8 +75,8 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
                 val pair = (String) jsonList.get(3);
                 switch (channelName) {
                     case "ticker":
-                        val tickerData = TickerMsg.fromMap(channelId, channelName, pair, (Map) jsonList.get(1));
-                        this.sessionData.append(tickerData, System.currentTimeMillis());
+                        val tickerMsg = TickerMsg.fromMap(channelId, channelName, pair, (Map) jsonList.get(1));
+                        this.sessionData.append(tickerMsg, System.currentTimeMillis());
                 }
             }
         } catch (JsonProcessingException e) {
@@ -105,8 +114,19 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
         }
     }
 
-    public void stop() {
+    public void close() {
         try {
+            val IDs = this.sessionData.getChannelIDs();
+            IDs.stream().forEach(id -> {
+                val json = new ObjectMapper().createObjectNode();
+                json.put("event", "unsubscribe");
+                json.put("channelID", id);
+                try {
+                    this.wsSession.sendMessage(new TextMessage(json.toString()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
             this.wsSession.close();
         } catch (IOException e) {
             e.printStackTrace();

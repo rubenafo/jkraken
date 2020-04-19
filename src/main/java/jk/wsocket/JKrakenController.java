@@ -7,12 +7,10 @@ import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -45,7 +43,7 @@ public class JKrakenController {
         return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/unsubscribe")
+    @PostMapping("/unsubscribe")
     public ResponseEntity<String> unsubscribe (@RequestParam List<String> pairs) {
         LOGGER.debug("unsubscribe");
         this.krakenWs.unsubscribe(pairs);
@@ -71,13 +69,20 @@ public class JKrakenController {
 
     @PostMapping ("/close")
     public ResponseEntity<String> close () {
-        this.krakenWs.stop();
+        this.krakenWs.close();
         return ResponseEntity.ok("");
     }
 
     @GetMapping ("/channels")
     public ResponseEntity<String> channels () {
-        val userData = this.krakenWs.getSessionData();
-        return ResponseEntity.ok(JsonUtils.toJson(userData.getSubscriptionData()));
+        val userData = this.krakenWs.getSessionData().getSubscriptionData();
+        return ResponseEntity.ok(JsonUtils.toJson(userData));
+    }
+
+    @GetMapping (path = {"/tickers", "/tickers/{channelName}"})
+    public ResponseEntity<String> tickers (
+            @PathVariable (value = "channelName", required = false) String channelName) {
+        val tickerData = this.krakenWs.getSessionData().getTickerData(Optional.ofNullable(channelName));
+        return ResponseEntity.ok(JsonUtils.toJson(tickerData));
     }
 }

@@ -1,16 +1,16 @@
 package jk.data;
 
 
-import jk.wsocket.responses.ChannelMsg;
+import jk.wsocket.responses.SubscriptionStatusMsg;
 import jk.wsocket.responses.TickerMsg;
 import lombok.Getter;
 import lombok.val;
+import lombok.var;
 import tech.tablesaw.api.*;
 
-import java.text.DateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
@@ -58,14 +58,40 @@ public class SessionData {
         IntStream.range(0, tickerRow.getValues().size()).forEach(i -> row.setDouble(i+4, tickerRow.getValues().get(i)));
     }
 
-    public void append(ChannelMsg channelAck, long timestamp) {
+    public void append(SubscriptionStatusMsg channelAck, long timestamp) {
         val row = subscriptionData.appendRow();
-        row.setInt(0, channelAck.getChannelId());
+        row.setInt(0, channelAck.getChannelID());
         row.setString(1, channelAck.getChannelName());
         row.setString(2, channelAck.getTicker());
         row.setString(3, channelAck.getEvent());
         row.setString(4, channelAck.getPair());
         row.setString(5, channelAck.getStatus());
         row.setLong(6, timestamp);
+    }
+
+    public Table getTickerData(Optional<String> channelName) {
+        var filteredTable = tickerData;
+        if (channelName.isPresent()) {
+            val id = channelName.get();
+            var isInteger = false;
+            var channelID = 0;
+            try {
+                channelID = Integer.parseInt(id);
+                isInteger = true;
+            } catch (NumberFormatException ex) {
+                // do nothing
+            }
+            if (!isInteger) {
+                filteredTable = tickerData.where(tickerData.stringColumn("channelName").isEqualTo(id));
+            } else { // integer
+                filteredTable = tickerData.where(tickerData.stringColumn("channelName").isEqualTo(id)
+                        .or(tickerData.intColumn("channelID").isEqualTo(channelID)));
+            }
+        }
+        return filteredTable;
+    }
+
+    public Set<Integer> getChannelIDs () {
+        return Set.of(this.subscriptionData.intColumn("channelID").unique().asObjectArray());
     }
 }
