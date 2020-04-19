@@ -78,4 +78,11 @@ public class JKrakenController {
         val tickerData = this.krakenWs.getSessionData().getTickerData(Optional.ofNullable(channelName));
         return ResponseEntity.ok(JsonUtils.toJson(tickerData));
     }
+
+    @GetMapping (path = {"/ohlc", "/ohlc/{channelName}"})
+    public ResponseEntity<String> ohlc (
+            @PathVariable (value = "channelName", required = false) String channelName) {
+        val ohlcData = this.krakenWs.getSessionData().getOhlcData(Optional.ofNullable(channelName));
+        return ResponseEntity.ok(JsonUtils.toJson(ohlcData));
+    }
 }

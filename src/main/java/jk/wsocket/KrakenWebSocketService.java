@@ -3,7 +3,9 @@ package jk.wsocket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jk.data.SessionData;
+import jk.wsocket.responses.OhlcMsg;
 import jk.wsocket.responses.SubscriptionStatusMsg;
 import jk.wsocket.responses.TickerMsg;
 import lombok.Getter;
@@ -23,7 +25,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @Service
 public class KrakenWebSocketService extends TextWebSocketHandler {
@@ -63,7 +64,7 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
                     case "ping": case "pong": case "heartbeat": break;
                     case "subscriptionStatus":
                         val subscribeMsg = this.jsonMapper.readValue(rawMsg, SubscriptionStatusMsg.class);
-                        this.sessionData.subscribe(subscribeMsg);
+                        this.sessionData.updateSubscription(subscribeMsg);
                         break;
                     default:
                         LOGGER.debug("Error: ignoring unknown event type received={}", eventType);
@@ -73,10 +74,16 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
                 int channelId = (int) jsonList.get(0);
                 val channelName = (String) jsonList.get(2);
                 val pair = (String) jsonList.get(3);
-                switch (channelName) {
+                val channelType = this.sessionData.getChannels().get(channelId).getSubscriptionName();
+                switch (channelType) {
                     case "ticker":
                         val tickerMsg = TickerMsg.fromMap(channelId, channelName, pair, (Map) jsonList.get(1));
                         this.sessionData.append(tickerMsg, System.currentTimeMillis());
+                        break;
+                    case "ohlc":
+                        val ohlcMsg = OhlcMsg.fromMap(jsonList);
+                        this.sessionData.append(ohlcMsg);
+                        break;
                 }
             }
         } catch (JsonProcessingException e) {

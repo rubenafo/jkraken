@@ -16,4 +16,8 @@ public class SubscriptionStatusMsg {
     private String pair;
     private String status;
     private Map<String, Object> subscription;
+
+    public String getSubscriptionName() {
+        return (String) this.subscription.get("name"); // ticker, ohlc
+    }
 }
