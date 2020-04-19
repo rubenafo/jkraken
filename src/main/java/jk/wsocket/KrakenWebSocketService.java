@@ -63,7 +63,7 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
                     case "ping": case "pong": case "heartbeat": break;
                     case "subscriptionStatus":
                         val subscribeMsg = this.jsonMapper.readValue(rawMsg, SubscriptionStatusMsg.class);
-                        this.sessionData.append(subscribeMsg, System.currentTimeMillis());
+                        this.sessionData.subscribe(subscribeMsg);
                         break;
                     default:
                         LOGGER.debug("Error: ignoring unknown event type received={}", eventType);
@@ -133,12 +133,15 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
         }
     }
 
-    public void ping() {
-        try {
-            this.wsSession.sendMessage(new TextMessage("{\"event\":\"ping\"}"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public String getStatusInfo() {
+        var json = new ObjectMapper().createObjectNode();
+        json.put("connected", this.wsSession.isOpen());
+        json.put("tickerItems", this.sessionData.getTickerData().rowCount());
+        val channels = json.putArray("channels");
+        this.sessionData.getChannels().entrySet().forEach(e -> {
+            channels.addObject().put("channelID", e.getKey()).put("channelName", e.getValue().getChannelName());
+        });
+        return json.toString();
     }
 
     public boolean connectSession() {

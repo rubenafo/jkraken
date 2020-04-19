@@ -50,10 +50,9 @@ public class JKrakenController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/ping")
+    @GetMapping("/status")
     public ResponseEntity<String> ping () {
-        this.krakenWs.ping();
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(this.krakenWs.getStatusInfo());
     }
 
     @PostMapping("/connect")
@@ -71,12 +70,6 @@ public class JKrakenController {
     public ResponseEntity<String> close () {
         this.krakenWs.close();
         return ResponseEntity.ok("");
-    }
-
-    @GetMapping ("/channels")
-    public ResponseEntity<String> channels () {
-        val userData = this.krakenWs.getSessionData().getSubscriptionData();
-        return ResponseEntity.ok(JsonUtils.toJson(userData));
     }
 
     @GetMapping (path = {"/tickers", "/tickers/{channelName}"})
