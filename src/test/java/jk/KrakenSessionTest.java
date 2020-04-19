@@ -1,6 +1,5 @@
 package jk;
 
-import jk.app.JsonUtils;
 import jk.wsocket.KrakenWebSocketService;
 import jk.wsocket.responses.SubscriptionStatusMsg;
 import lombok.val;
