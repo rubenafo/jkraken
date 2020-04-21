@@ -44,7 +44,7 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
     protected boolean connect() {
         try {
             var webSocketClient = new StandardWebSocketClient();
-            this.wsSession = webSocketClient.doHandshake(this, new WebSocketHttpHeaders(), URI.create("wss://ws.kraken.com")).get();
+            this.wsSession = webSocketClient.doHandshake(this, new WebSocketHttpHeaders(), URI.create("wss://ws-auth.kraken.com")).get();
             return true;
         } catch (Exception e) {
             LOGGER.error("Exception while accessing websockets", e);
@@ -99,7 +99,8 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
     public void subscribe(List<String> pairs, int interval, int depth, String name) {
         var json = new ObjectMapper().createObjectNode();
         json.put("event", "subscribe");
-        json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(pairs));
+        if (pairs != null)
+            json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(pairs));
         json.putObject("subscription").put("name",name);
         System.out.println(json.toString());
         try {

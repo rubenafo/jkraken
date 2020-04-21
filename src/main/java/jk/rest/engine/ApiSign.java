@@ -1,11 +1,12 @@
 package jk.rest.engine;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.val;
 import lombok.var;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -54,5 +55,19 @@ public class ApiSign {
     public static void availableKeys(LocalPropLoader properties) {
         if (!properties.keysFound())
             throw new RuntimeException("Missing auth keys, private API request won't work");
+    }
+
+    public static String getWebSocketAuthToken () {
+        val request = getRequest("https://api.kraken.com/0/private/GetWebSocketsToken", Map.of(), "/0/private/GetWebSocketsToken", new LocalPropLoader());
+        ResponseEntity<String> response = new RestTemplate().postForEntity("https://api.kraken.com/0/private/GetWebSocketsToken", request, String.class);
+        val body =  response.getBody();
+        try {
+            val json = new ObjectMapper().readValue(body, Map.class);
+            val token = ((Map) json.get("result")).get("token");
+            return (String) token;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return body;
     }
 }

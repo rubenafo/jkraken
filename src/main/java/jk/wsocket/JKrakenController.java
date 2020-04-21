@@ -25,7 +25,7 @@ public class JKrakenController {
 
     @PostMapping("/subscribe")
     public ResponseEntity<String> postSubscribe (
-            @RequestParam List<String> pairs,
+            @RequestParam (required = false) List<String> pairs,
             @RequestParam(defaultValue = "5") int interval,
             @RequestParam(defaultValue = "10") int depth,
             @RequestParam(required = true) String name) {
