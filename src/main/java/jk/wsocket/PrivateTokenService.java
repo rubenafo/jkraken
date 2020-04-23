@@ -1,4 +1,4 @@
-package jk.wsocket.responses;
+package jk.wsocket;
 
 import jk.rest.engine.ApiSign;
 import lombok.val;

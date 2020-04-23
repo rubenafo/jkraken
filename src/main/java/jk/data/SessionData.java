@@ -2,9 +2,11 @@ package jk.data;
 
 
 import jk.wsocket.responses.OhlcMsg;
+import jk.wsocket.responses.OwnTrade;
 import jk.wsocket.responses.SubscriptionStatusMsg;
 import jk.wsocket.responses.TickerMsg;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 import lombok.var;
 import tech.tablesaw.api.*;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
@@ -25,12 +28,15 @@ import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 public class SessionData {
 
     private static final DateTimeFormatter formatter = ISO_INSTANT;
-    private Map<Integer, SubscriptionStatusMsg> channels;
+    private Map<Integer, SubscriptionStatusMsg> subscribedChannels;
     private final Table tickerData;
     private final Table ohlcData;
 
+    @Setter
+    private Map<String, OwnTrade> ownTrades;
+
     public SessionData () {
-        this.channels = new HashMap<>();
+        this.subscribedChannels = new HashMap<>();
         this.tickerData = Table.create("tickerData")
                 .addColumns(IntColumn.create("channelID"))
                 .addColumns(StringColumn.create("channelName"))
@@ -128,23 +134,28 @@ public class SessionData {
     }
 
     public Set<Integer> getChannelIDs () {
-        return this.channels.keySet();
+        return this.subscribedChannels.keySet();
     }
 
     public void updateSubscription(SubscriptionStatusMsg msg) {
         if (msg.getStatus().equals("unsubscribed")) {
-            this.channels.get(msg.getChannelID()).setStatus("unsubscribed");
+            this.subscribedChannels.get(msg.getChannelID()).setStatus("unsubscribed");
         }
-        this.channels.put(msg.getChannelID(), msg);
+        this.subscribedChannels.put(msg.getChannelID(), msg);
     }
 
     public String getSubscriptionName (int channelID) {
-        val channel = this.channels.get(channelID);
+        val channel = this.subscribedChannels.get(channelID);
         if (channel == null) {
             throw new RuntimeException("Missing channel subscription: " + channelID);
         }
         else {
             return channel.getSubscriptionName();
         }
+    }
+
+    public SubscriptionStatusMsg findByName (String name) {
+        val channels = this.subscribedChannels.values().stream().filter(ch -> ch.getSubscriptionName().equalsIgnoreCase(name)).collect(Collectors.toList());
+        return channels.get(0);
     }
 }
