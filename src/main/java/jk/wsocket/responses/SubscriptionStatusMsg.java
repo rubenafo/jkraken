@@ -15,6 +15,7 @@ public class SubscriptionStatusMsg {
     private String event;
     private String pair;
     private String status;
+    private String errorMessage;
     private Map<String, Object> subscription;
 
     public String getSubscriptionName() {

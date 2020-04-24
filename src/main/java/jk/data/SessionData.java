@@ -1,10 +1,7 @@
 package jk.data;
 
 
-import jk.wsocket.responses.OhlcMsg;
-import jk.wsocket.responses.OwnTrade;
-import jk.wsocket.responses.SubscriptionStatusMsg;
-import jk.wsocket.responses.TickerMsg;
+import jk.wsocket.responses.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -34,6 +31,8 @@ public class SessionData {
 
     @Setter
     private Map<String, OwnTrade> ownTrades;
+
+    private Map<String, OpenOrder> openOrders;
 
     public SessionData () {
         this.subscribedChannels = new HashMap<>();
@@ -157,5 +156,13 @@ public class SessionData {
     public SubscriptionStatusMsg findByName (String name) {
         val channels = this.subscribedChannels.values().stream().filter(ch -> ch.getSubscriptionName().equalsIgnoreCase(name)).collect(Collectors.toList());
         return channels.get(0);
+    }
+
+    public void clearChannels() {
+        this.subscribedChannels.clear();
+    }
+
+    public void addOpenOrders(OpenOrdersMsg openOrders) {
+        this.openOrders = openOrders.getOwnTrades();
     }
 }

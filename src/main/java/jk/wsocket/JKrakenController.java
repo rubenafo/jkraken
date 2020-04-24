@@ -57,19 +57,23 @@ public class JKrakenController {
 
     @PostMapping("/connect")
     public ResponseEntity<String> connect () {
-        val success = this.krakenWs.connectSession();
-        if (success) {
-            return ResponseEntity.ok("{\"msg\": \"connected to Kraken\"}");
+        if (this.krakenWs.connected()) {
+            return ResponseEntity.ok("{\"msg\": \"server already connected\"}");
         }
         else {
-            return ResponseEntity.ok("{\"msg\": \"error connecting to Kraken\"}");
+            val success = this.krakenWs.connectSession();
+            if (success) {
+                return ResponseEntity.ok("{\"msg\": \"connected to Kraken\"}");
+            } else {
+                return ResponseEntity.ok("{\"msg\": \"error connecting to Kraken\"}");
+            }
         }
     }
 
     @PostMapping ("/close")
     public ResponseEntity<String> close () {
         this.krakenWs.close();
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok("{}");
     }
 
     @GetMapping (path = {"/tickers", "/tickers/{channelName}"})
@@ -84,5 +88,20 @@ public class JKrakenController {
             @PathVariable (value = "channelName", required = false) String channelName) {
         val ohlcData = this.krakenWs.getSessionData().getOhlcData(Optional.ofNullable(channelName));
         return ResponseEntity.ok(JsonUtils.toJson(ohlcData));
+    }
+
+    @PostMapping(path = "/addOrder")
+    public ResponseEntity<String> addOrder () {
+        return null;
+    }
+
+    @GetMapping(path = "openOrders")
+    public ResponseEntity<String> openOrders () {
+        return ResponseEntity.ok("");
+    }
+
+    @PostMapping(path = "/cancelOrder")
+    public ResponseEntity<String> cancelOrder() {
+        return ResponseEntity.ok("");
     }
 }

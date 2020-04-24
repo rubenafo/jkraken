@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import jk.data.SessionData;
-import jk.wsocket.responses.OhlcMsg;
-import jk.wsocket.responses.OwnTradesMsg;
-import jk.wsocket.responses.SubscriptionStatusMsg;
-import jk.wsocket.responses.TickerMsg;
+import jk.wsocket.responses.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
@@ -15,6 +12,7 @@ import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
@@ -42,6 +40,14 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
         this.sessionData = new SessionData();
     }
 
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        System.out.println("connection closed: " + this.wsSession.isOpen());
+        this.sessionData.clearChannels();
+    }
+
+
+
     @PostConstruct
     protected boolean connect() {
         try {
@@ -65,8 +71,14 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
                 switch (eventType) {
                     case "ping": case "pong": case "heartbeat": break;
                     case "subscriptionStatus":
-                        val subscribeMsg = this.jsonMapper.readValue(rawMsg, SubscriptionStatusMsg.class);
-                        this.sessionData.updateSubscription(subscribeMsg);
+                        val status = ((Map) obj).get("status");
+                        if (status.equals("error")) {
+                            LOGGER.debug("Error: " + ((Map) (obj)).get("errorMessage"));
+                        }
+                        else {
+                            val subscribeMsg = this.jsonMapper.readValue(rawMsg, SubscriptionStatusMsg.class);
+                            this.sessionData.updateSubscription(subscribeMsg);
+                        }
                         break;
                     default:
                         LOGGER.debug("Error: ignoring unknown event type received={}", eventType);
@@ -75,8 +87,17 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
                 val jsonList = (List) obj;
                 if (jsonList.get(0) instanceof List) {
                     val type = (String) jsonList.get(1);
-                    val ownTradesMsg = this.jsonMapper.readValue(rawMsg, OwnTradesMsg.class);
-                    this.sessionData.setOwnTrades(ownTradesMsg.getOwnTrades());
+                    switch (type) {
+                        case "ownTrades":
+                            val ownTradesMsg = this.jsonMapper.readValue(rawMsg, OwnTradesMsg.class);
+                            this.sessionData.setOwnTrades(ownTradesMsg.getOwnTrades());
+                            break;
+                        case "openOrders":
+                            val openOrders = this.jsonMapper.readValue(rawMsg, OpenOrdersMsg.class);
+                            this.sessionData.addOpenOrders(openOrders);
+                            break;
+                    }
+
                 }
                 else {
                     int channelId = (int) jsonList.get(0);
@@ -112,7 +133,7 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
             json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(pairs));
         val subscription = json.putObject("subscription");
         subscription.put("name",name);
-        if (name.equals("ownTrades")) {
+        if (name.equalsIgnoreCase("ownTrades") || name.equalsIgnoreCase("openOrders")) {
             subscription.put("token", tokenService.getToken());
         }
         try {
@@ -136,18 +157,8 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
 
     public void close() {
         try {
-            val IDs = this.sessionData.getChannelIDs();
-            IDs.stream().forEach(id -> {
-                val json = new ObjectMapper().createObjectNode();
-                json.put("event", "unsubscribe");
-                json.put("channelID", id);
-                try {
-                    this.wsSession.sendMessage(new TextMessage(json.toString()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
             this.wsSession.close();
+            this.sessionData.clearChannels();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -170,5 +181,14 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
             sessionStarted = this.connect();
         }
         return sessionStarted;
+    }
+
+    boolean connected () {
+        return this.wsSession.isOpen();
+    }
+
+    public boolean getOpenOrders() {
+        //this.wsSession.sendMessage();
+        return true;
     }
 }
