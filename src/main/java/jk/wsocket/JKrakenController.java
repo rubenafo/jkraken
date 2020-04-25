@@ -95,13 +95,20 @@ public class JKrakenController {
         return null;
     }
 
-    @GetMapping(path = "openOrders")
-    public ResponseEntity<String> openOrders () {
-        return ResponseEntity.ok("");
-    }
-
     @PostMapping(path = "/cancelOrder")
     public ResponseEntity<String> cancelOrder() {
         return ResponseEntity.ok("");
+    }
+
+    @GetMapping(path = "/orders")
+    public ResponseEntity<Object> ownOrders () {
+        val orders = this.krakenWs.getSessionData().getOpenOrders();
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping(path = "/trades")
+    public ResponseEntity<Object> ownTrades () {
+        val trades = this.krakenWs.getSessionData().getOwnTrades();
+        return ResponseEntity.ok(trades);
     }
 }

@@ -11,6 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -66,5 +70,14 @@ public class KrakenSessionTest {
         kservice.handleTextMessage(this.session, new TextMessage(input));
         val ownTrades = kservice.getSessionData().getOwnTrades();
         assertTrue(ownTrades.keySet().size() == 23);
+    }
+
+    @Test
+    public void session_updates_order () throws IOException {
+        val receiveOrders = Files.readAllBytes(Paths.get("src", "test", "java", "resources", "openOrders.json"));
+        kservice.handleTextMessage(this.session, new TextMessage(receiveOrders));
+        val orderUpdate = Files.readAllBytes(Paths.get("src", "test", "java", "resources", "orderUpdate.json"));
+        kservice.handleTextMessage(this.session, new TextMessage(orderUpdate));
+        assertEquals("closed", kservice.getSessionData().getOpenOrders().get("OGTT3Y-C6I3P-XRI6HX").getStatus());
     }
 }
