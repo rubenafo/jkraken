@@ -2,17 +2,14 @@ package jk.data;
 
 
 import jk.wsocket.responses.*;
+import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.val;
 import lombok.var;
 import tech.tablesaw.api.*;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,20 +18,20 @@ import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 /**
  * This class contains all the session's data, organized by channelId
  */
-@Getter
+@Data
 public class SessionData {
 
     private static final DateTimeFormatter formatter = ISO_INSTANT;
     private Map<Integer, SubscriptionStatusMsg> subscribedChannels;
     private final Table tickerData;
     private final Table ohlcData;
-
-    @Setter
-    private Map<String, OwnTrade> ownTrades;
+    private Map<String, List<OwnTrade>> ownTrades;
 
     private Map<String, OpenOrder> openOrders;
 
     public SessionData () {
+       // this.ownTrades = new HashMap<>();
+        this.openOrders = new HashMap<>();
         this.subscribedChannels = new HashMap<>();
         this.tickerData = Table.create("tickerData")
                 .addColumns(IntColumn.create("channelID"))
@@ -138,7 +135,7 @@ public class SessionData {
 
     public void updateSubscription(SubscriptionStatusMsg msg) {
         if (msg.getStatus().equals("unsubscribed")) {
-            this.subscribedChannels.get(msg.getChannelID()).setStatus("unsubscribed");
+            this.subscribedChannels.remove(msg.getChannelID());
         }
         this.subscribedChannels.put(msg.getChannelID(), msg);
     }

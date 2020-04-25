@@ -14,11 +14,11 @@ import java.util.Map;
 @Value
 public class OwnTradesMsg {
 
-    private Map<String, OwnTrade> ownTrades;
+    private Map<String, List<OwnTrade>> ownTrades;
 
     @JsonCreator
     public OwnTradesMsg (Object rawObject) {
-        this.ownTrades = new HashMap<String, OwnTrade>();
+        this.ownTrades = new HashMap<String, List<OwnTrade>>();
         val tradesInfo = (List) ((List) rawObject).get(0);
         tradesInfo.stream().forEach(rawMap -> {
             val tradeKey = (String) ((Map) rawMap).keySet().iterator().next();
@@ -27,7 +27,13 @@ public class OwnTradesMsg {
                 val mapper = new ObjectMapper();
                 mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
                 val ownTrade = mapper.readValue(mapper.writeValueAsBytes(rawTrade), OwnTrade.class);
-                ownTrades.put(tradeKey, ownTrade);
+                val existingTrades = ownTrades.get(tradeKey);
+                if (existingTrades == null) {
+                    ownTrades.put(tradeKey, List.of(ownTrade));
+                }
+                else {
+                    existingTrades.add(ownTrade);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

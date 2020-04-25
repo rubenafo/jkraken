@@ -55,5 +55,6 @@ public class SubscriptionTests {
     public void subscribed_open_orders () throws IOException {
         val input = Files.readAllBytes(Paths.get("src", "test", "java", "resources", "openOrders.json"));
         kservice.handleTextMessage(this.session, new TextMessage(input));
+        val orders = kservice.getSessionData().getOpenOrders();
     }
 }

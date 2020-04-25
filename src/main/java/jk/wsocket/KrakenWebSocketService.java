@@ -97,7 +97,6 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
                             this.sessionData.addOpenOrders(openOrders);
                             break;
                     }
-
                 }
                 else {
                     int channelId = (int) jsonList.get(0);
@@ -185,10 +184,5 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
 
     boolean connected () {
         return this.wsSession.isOpen();
-    }
-
-    public boolean getOpenOrders() {
-        //this.wsSession.sendMessage();
-        return true;
     }
 }
