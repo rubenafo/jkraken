@@ -1,12 +1,8 @@
 package jk;
 
-import jk.rest.api.JKraken;
-import jk.rest.engine.ApiSign;
-import jk.rest.entities.AssetPairsEnum;
-import jk.rest.entities.Order;
-import lombok.var;
+import jk.rest.api.KrakenRestService;
 
-public class Example {
+public class SampleRequests {
 
 	public static void main(String[] args)  {
 		//System.out.println(new JKraken().getOpenOrders());
@@ -14,8 +10,9 @@ public class Example {
 		//System.out.println(JKraken.getTicker(AssetPairsEnum.AssetPairs.XBTUSDC));
 		//System.out.println(new JKraken().getTradeVolume("XXBTZUSD", "XXBTZEUR"));
 //		var sell = Order.createSellOrder(AssetPairsEnum.AssetPairs.XBTUSDC, 44d,20);
-//		System.out.println(new JKraken().addOrder(sell));
+//		System.out.println(new KrakenRestService().addOrder(sell));
+		//System.out.println (new KrakenRestService().getBalance());
 		//var rateManager = new RateManager();
-		ApiSign.getWebSocketAuthToken();
+		//ApiSign.getWebSocketAuthToken();
 	}
 }

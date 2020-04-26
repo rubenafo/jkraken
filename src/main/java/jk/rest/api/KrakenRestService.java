@@ -1,24 +1,26 @@
 package jk.rest.api;
 
-import jk.rest.engine.ApiSign;
-import jk.rest.engine.LocalPropLoader;
+import jk.rest.tools.ApiSign;
+import jk.rest.tools.LocalPropLoader;
 import jk.rest.entities.*;
 import jk.rest.entities.results.*;
 import lombok.var;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 
 import static jk.rest.api.KrakenEndpoints.*;
 
-public class JKraken {
+@Service
+public class KrakenRestService {
 
     private final LocalPropLoader properties;
     private final RestTemplate restTemplate;
 
-    public JKraken () {
+    public KrakenRestService() {
         this.properties = new LocalPropLoader();
         this.restTemplate = new RestTemplate();
     }
@@ -83,7 +85,7 @@ public class JKraken {
 
     // private trading methods
 
-    public AccountBalanceInfo getAccountTrade () {
+    public AccountBalanceInfo getBalance() {
         ApiSign.availableKeys(this.properties);
         var url = KrakenEndpoints.url(KrakenEndpoints.PRIVATE_BALANCE);
         var requestsEntity = ApiSign.getRequest(url, KrakenEndpoints.PRIVATE_BALANCE, this.properties);

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages="jk.api, jk.wsocket")
+@ComponentScan(basePackages={"jk.api, jk.wsocket", "jk.rest.api"})
 public class JKrakenApp {
 
     public static void main(String[] args) {

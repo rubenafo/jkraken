@@ -1,6 +1,11 @@
 package jk.wsocket;
 
 import jk.app.JsonUtils;
+import jk.rest.api.KrakenRestService;
+import jk.rest.entities.AssetPairsEnum;
+import jk.rest.entities.Order;
+import jk.rest.entities.results.AccountBalanceInfo;
+import jk.rest.entities.results.OpenPositionsInfo;
 import lombok.NonNull;
 import lombok.val;
 import lombok.var;
@@ -18,9 +23,11 @@ public class JKrakenController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JKrakenController.class);
     private final KrakenWebSocketService krakenWs;
+    private final KrakenRestService krakenRest;
 
-    public JKrakenController(@NonNull KrakenWebSocketService krakenWs) {
+    public JKrakenController(@NonNull KrakenWebSocketService krakenWs, @NonNull KrakenRestService krakenRest) {
         this.krakenWs = krakenWs;
+        this.krakenRest = krakenRest;
     }
 
     @PostMapping("/subscribe")
@@ -110,5 +117,17 @@ public class JKrakenController {
     public ResponseEntity<Object> ownTrades () {
         val trades = this.krakenWs.getSessionData().getOwnTrades();
         return ResponseEntity.ok(trades);
+    }
+
+    @PostMapping(path = {"/orders/add"})
+    public ResponseEntity<Object> addTrade () {
+        var sell = Order.createSellOrder(AssetPairsEnum.AssetPairs.XBTUSDC, 44d,20);
+        val orderInfo = new KrakenRestService().addOrder(sell);
+        return ResponseEntity.ok(orderInfo);
+    }
+
+    @GetMapping(path= "/balance")
+    public ResponseEntity<AccountBalanceInfo> getBalance () {
+        return ResponseEntity.ok(this.krakenRest.getBalance());
     }
 }

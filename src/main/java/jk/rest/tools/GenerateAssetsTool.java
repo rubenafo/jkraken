@@ -1,6 +1,6 @@
 package jk.rest.tools;
 
-import jk.rest.api.JKraken;
+import jk.rest.api.KrakenRestService;
 import jk.rest.entities.AssetPairs;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -71,7 +71,7 @@ public class GenerateAssetsTool {
 
     @SneakyThrows
     public static void main (String ...args) {
-        var assetPairs = JKraken.getAssetPairs();
+        var assetPairs = KrakenRestService.getAssetPairs();
         GenerateAssetsTool.createEnum(assetPairs);
     }
 }

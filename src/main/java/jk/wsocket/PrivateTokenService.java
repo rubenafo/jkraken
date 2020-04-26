@@ -1,6 +1,6 @@
 package jk.wsocket;
 
-import jk.rest.engine.ApiSign;
+import jk.rest.tools.ApiSign;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
