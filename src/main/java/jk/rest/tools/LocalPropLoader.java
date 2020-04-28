@@ -1,6 +1,5 @@
 package jk.rest.tools;
 
-import lombok.Data;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-@Data
 public class LocalPropLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalPropLoader.class);
 
@@ -27,6 +25,7 @@ public class LocalPropLoader {
             val inputStream = new ByteArrayInputStream(Files.readAllBytes(Paths.get(propertiesFile)));
             props.load(inputStream);
             LOGGER.info("Kraken keys successfully read from file: " + propertiesFile);
+
         } catch (IOException e) {
             throw new RuntimeException("Invalid path for Kraken keys file: " + propertiesFile);
         }
