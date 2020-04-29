@@ -4,6 +4,7 @@ import jk.rest.api.KrakenRestService;
 import jk.rest.entities.AssetPairsEnum;
 import jk.rest.entities.Order;
 import jk.rest.entities.results.AccountBalanceInfo;
+import jk.wsocket.auth.KrakenAuthCondition;
 import lombok.NonNull;
 import lombok.val;
 import lombok.var;

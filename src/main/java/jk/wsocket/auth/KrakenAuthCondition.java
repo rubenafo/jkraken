@@ -1,4 +1,4 @@
-package jk.wsocket;
+package jk.wsocket.auth;
 
 import jk.rest.tools.LocalPropLoader;
 import org.springframework.context.annotation.Condition;

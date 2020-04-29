@@ -129,25 +129,11 @@ public class SessionData {
         return filteredTable;
     }
 
-    public Set<Integer> getChannelIDs () {
-        return this.subscribedChannels.keySet();
-    }
-
     public void updateSubscription(SubscriptionStatusMsg msg) {
         if (msg.getStatus().equals("unsubscribed")) {
             this.subscribedChannels.remove(msg.getChannelID());
         }
         this.subscribedChannels.put(msg.getChannelID(), msg);
-    }
-
-    public String getSubscriptionName (int channelID) {
-        val channel = this.subscribedChannels.get(channelID);
-        if (channel == null) {
-            throw new RuntimeException("Missing channel subscription: " + channelID);
-        }
-        else {
-            return channel.getSubscriptionName();
-        }
     }
 
     public SubscriptionStatusMsg findByName (String name) {

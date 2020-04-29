@@ -43,11 +43,9 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        System.out.println("connection closed: " + this.wsSession.isOpen());
+        LOGGER.debug("Kraken ws: connection closed");
         this.sessionData.clearChannels();
     }
-
-
 
     @PostConstruct
     protected boolean connect() {
@@ -183,7 +181,7 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
         return sessionStarted;
     }
 
-    boolean connected () {
+    boolean isConnected() {
         return this.wsSession.isOpen();
     }
 }

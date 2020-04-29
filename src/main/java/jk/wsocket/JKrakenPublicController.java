@@ -2,9 +2,9 @@ package jk.wsocket;
 
 import jk.app.JsonUtils;
 import jk.rest.api.KrakenRestService;
+import jk.wsocket.validation.RequestValidator;
 import lombok.NonNull;
 import lombok.val;
-import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 public class JKrakenPublicController {
@@ -32,17 +31,14 @@ public class JKrakenPublicController {
             @RequestParam(defaultValue = "5") int interval,
             @RequestParam(defaultValue = "10") int depth,
             @RequestParam(required = true) String name) {
-        var depths = Set.of(10, 25, 100, 500, 1000);
-        var intervals = Set.of(1|5|15|30|60|240|1440|10080|21600);
-        var names = Set.of("ticker","ohlc","trade","book","spread","ownTrades","openOrders");
         LOGGER.debug("subscribe");
-        this.krakenWs.subscribe(pairs, interval, depth, name);
-        return ResponseEntity.ok("ok");
-    }
-
-    @GetMapping("/subscribe")
-    public ResponseEntity<String> getSubscribe (
-            @RequestParam(required = false) Integer subscriptionId) {
+        try {
+            RequestValidator.validateSubscription(pairs, interval, depth, name);
+            this.krakenWs.subscribe(pairs, interval, depth, name);
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body("{error:\"" + e.getMessage() + "\"}");
+        }
         return ResponseEntity.ok("ok");
     }
 
@@ -60,7 +56,7 @@ public class JKrakenPublicController {
 
     @PostMapping("/connect")
     public ResponseEntity<String> connect () {
-        if (this.krakenWs.connected()) {
+        if (this.krakenWs.isConnected()) {
             return ResponseEntity.ok("{\"msg\": \"server already connected\"}");
         }
         else {
