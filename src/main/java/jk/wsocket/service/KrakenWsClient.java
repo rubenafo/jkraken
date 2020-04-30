@@ -1,18 +1,13 @@
-package jk.wsocket;
+package jk.wsocket.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import jk.data.SessionData;
-import jk.rest.entities.results.AddOrderInfo;
 import jk.wsocket.responses.*;
-import lombok.Getter;
-import lombok.NonNull;
 import lombok.val;
 import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -20,43 +15,56 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-@Service
-public class KrakenWebSocketService extends TextWebSocketHandler {
+public class KrakenWsClient extends TextWebSocketHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWebSocketService.class);
-    private final PrivateTokenService tokenService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsClient.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
-    @Getter
-    private final SessionData sessionData;
-    private WebSocketSession wsSession;
 
-    public KrakenWebSocketService (@NonNull PrivateTokenService tokenService) {
-        this.tokenService = tokenService;
+    private WebSocketSession clientSession;
+    private final SessionData sessionData;
+    private final String id;
+
+    public KrakenWsClient (String clientId) {
         this.sessionData = new SessionData();
+        this.id = clientId;
+    }
+
+    public void sendMessage(String msg) {
+        try {
+            this.clientSession.sendMessage(new TextMessage(msg));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected boolean connect(String url) {
+        try {
+            var webSocketClient = new StandardWebSocketClient();
+            this.clientSession = webSocketClient.doHandshake(this, new WebSocketHttpHeaders(), URI.create(url)).get();
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Exception while creating websockets", e);
+        }
+        return false;
+    }
+
+    public void close () {
+        try {
+            this.clientSession.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        LOGGER.debug("Kraken ws: connection closed");
+        LOGGER.info("Kraken ws: connection closed " + session.getUri());
         this.sessionData.clearChannels();
-    }
-
-    @PostConstruct
-    protected boolean connect() {
-        try {
-            var webSocketClient = new StandardWebSocketClient();
-            this.wsSession = webSocketClient.doHandshake(this, new WebSocketHttpHeaders(), URI.create("wss://ws-auth.kraken.com")).get();
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("Exception while accessing websockets", e);
-        }
-        return false;
     }
 
     @Override
@@ -122,66 +130,5 @@ public class KrakenWebSocketService extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         LOGGER.info("established connection - " + session);
-    }
-
-    public void subscribe(List<String> pairs, int interval, int depth, String name) {
-        var json = new ObjectMapper().createObjectNode();
-        json.put("event", "subscribe");
-        if (pairs != null)
-            json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(pairs));
-        val subscription = json.putObject("subscription");
-        subscription.put("name",name);
-        if (name.equalsIgnoreCase("ownTrades") || name.equalsIgnoreCase("openOrders")) {
-            subscription.put("token", tokenService.getToken());
-        }
-        try {
-            this.wsSession.sendMessage(new TextMessage(json.toString()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void unsubscribe(List<String> channelIds) {
-        var json = new ObjectMapper().createObjectNode();
-        json.put("event", "unsubscribe");
-        json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(channelIds));
-        json.putObject("subscription").put("name","ticker");
-        try {
-            this.wsSession.sendMessage(new TextMessage(json.toString()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void close() {
-        try {
-            this.wsSession.close();
-            this.sessionData.clearChannels();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getStatusInfo() {
-        var json = new ObjectMapper().createObjectNode();
-        json.put("connected", this.wsSession.isOpen());
-        json.put("tickerItems", this.sessionData.getTickerData().rowCount());
-        val channels = json.putArray("channels");
-        this.sessionData.getSubscribedChannels().entrySet().forEach(e -> {
-            channels.addObject().put("channelID", e.getKey()).put("channelName", e.getValue().getChannelName());
-        });
-        return json.toString();
-    }
-
-    public boolean connectSession() {
-        var sessionStarted = this.wsSession.isOpen();
-        if (!sessionStarted) {
-            sessionStarted = this.connect();
-        }
-        return sessionStarted;
-    }
-
-    boolean isConnected() {
-        return this.wsSession.isOpen();
     }
 }

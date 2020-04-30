@@ -1,7 +1,8 @@
-package jk.wsocket;
+package jk.wsocket.controller;
 
 import jk.app.JsonUtils;
 import jk.rest.api.KrakenRestService;
+import jk.wsocket.service.KrakenWsService;
 import jk.wsocket.validation.RequestValidator;
 import lombok.NonNull;
 import lombok.val;
@@ -17,10 +18,10 @@ import java.util.Optional;
 public class JKrakenPublicController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JKrakenPublicController.class);
-    private final KrakenWebSocketService krakenWs;
+    private final KrakenWsService krakenWs;
     private final KrakenRestService krakenRest;
 
-    public JKrakenPublicController(@NonNull KrakenWebSocketService krakenWs, @NonNull KrakenRestService krakenRest) {
+    public JKrakenPublicController(@NonNull KrakenWsService krakenWs, @NonNull KrakenRestService krakenRest) {
         this.krakenWs = krakenWs;
         this.krakenRest = krakenRest;
     }

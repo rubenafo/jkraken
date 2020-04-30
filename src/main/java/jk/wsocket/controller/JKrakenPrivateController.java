@@ -1,9 +1,10 @@
-package jk.wsocket;
+package jk.wsocket.controller;
 
 import jk.rest.api.KrakenRestService;
 import jk.rest.entities.AssetPairsEnum;
 import jk.rest.entities.Order;
 import jk.rest.entities.results.AccountBalanceInfo;
+import jk.wsocket.service.KrakenWsService;
 import jk.wsocket.auth.KrakenAuthCondition;
 import lombok.NonNull;
 import lombok.val;
@@ -21,10 +22,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class JKrakenPrivateController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JKrakenPublicController.class);
-    private final KrakenWebSocketService krakenWs;
+    private final KrakenWsService krakenWs;
     private final KrakenRestService krakenRest;
 
-    public JKrakenPrivateController(@NonNull KrakenWebSocketService krakenWs, @NonNull KrakenRestService krakenRest) {
+    public JKrakenPrivateController(@NonNull KrakenWsService krakenWs, @NonNull KrakenRestService krakenRest) {
         this.krakenWs = krakenWs;
         this.krakenRest = krakenRest;
     }

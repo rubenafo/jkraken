@@ -1,7 +1,7 @@
 package jk;
 
-import jk.wsocket.KrakenWebSocketService;
-import jk.wsocket.PrivateTokenService;
+import jk.wsocket.service.KrakenWsService;
+import jk.wsocket.service.PrivateTokenService;
 import jk.wsocket.responses.SubscriptionStatusMsg;
 import lombok.val;
 import lombok.var;
@@ -21,12 +21,12 @@ import static org.mockito.Mockito.mock;
 
 public class KrakenSessionTest {
 
-    private KrakenWebSocketService kservice;
+    private KrakenWsService kservice;
     private WebSocketSession session;
 
     @BeforeEach
     public void setup() {
-        this.kservice = new KrakenWebSocketService(mock(PrivateTokenService.class));
+        this.kservice = new KrakenWsService(mock(PrivateTokenService.class));
         this.session = mock(WebSocketSession.class);
     }
 

@@ -1,9 +1,8 @@
 package jk;
 
-import jk.wsocket.KrakenWebSocketService;
-import jk.wsocket.PrivateTokenService;
+import jk.wsocket.service.KrakenWsService;
+import jk.wsocket.service.PrivateTokenService;
 import lombok.val;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.socket.TextMessage;
@@ -22,12 +21,12 @@ import static org.mockito.Mockito.mock;
  */
 public class SubscriptionTests {
 
-    private KrakenWebSocketService kservice;
+    private KrakenWsService kservice;
     private WebSocketSession session;
 
     @BeforeEach
     public void setup() {
-        this.kservice = new KrakenWebSocketService(mock(PrivateTokenService.class));
+        this.kservice = new KrakenWsService(mock(PrivateTokenService.class));
         this.session = mock(WebSocketSession.class);
     }
 
