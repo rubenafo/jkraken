@@ -42,13 +42,13 @@ public class JKrakenPrivateController {
 
     @GetMapping(path = "/orders")
     public ResponseEntity<Object> ownOrders () {
-        val orders = this.krakenWs.getSessionData().getOpenOrders();
+        val orders = this.krakenWs.getOpenOrders();
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping(path = "/trades")
     public ResponseEntity<Object> ownTrades () {
-        val trades = this.krakenWs.getSessionData().getOwnTrades();
+        val trades = this.krakenWs.getOwnTrades();
         return ResponseEntity.ok(trades);
     }
 

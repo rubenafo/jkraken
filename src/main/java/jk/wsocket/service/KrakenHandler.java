@@ -14,24 +14,29 @@ import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import tech.tablesaw.api.Table;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-public class KrakenWsClient extends TextWebSocketHandler {
+public class KrakenHandler extends TextWebSocketHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenHandler.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
     private WebSocketSession clientSession;
     private final SessionData sessionData;
     private final String id;
+    private final String url;
 
-    public KrakenWsClient (String clientId) {
+    public KrakenHandler(String clientId, String url) {
         this.sessionData = new SessionData();
         this.id = clientId;
+        this.url = url;
     }
 
     public void sendMessage(String msg) {
@@ -42,7 +47,7 @@ public class KrakenWsClient extends TextWebSocketHandler {
         }
     }
 
-    protected boolean connect(String url) {
+    protected boolean connect() {
         try {
             var webSocketClient = new StandardWebSocketClient();
             this.clientSession = webSocketClient.doHandshake(this, new WebSocketHttpHeaders(), URI.create(url)).get();
@@ -130,5 +135,37 @@ public class KrakenWsClient extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         LOGGER.info("established connection - " + session);
+    }
+
+    public Optional<SubscriptionStatusMsg> subscribed (int channelId) {
+        return Optional.ofNullable(this.sessionData.getSubscribedChannels().get(channelId));
+    }
+
+    public boolean connected () {
+        return this.clientSession.isOpen();
+    }
+
+    public List<SubscriptionStatusMsg> getChannels () {
+        return new ArrayList<>(this.sessionData.getSubscribedChannels().values());
+    }
+
+    public Table getTickerData(Optional<String> channelName) {
+        return this.sessionData.getTickerData(channelName);
+    }
+
+    public Table getTickerData () {
+        return this.getTickerData(Optional.empty());
+    }
+
+    public Table getOHLCData(Optional<String> channelName) {
+        return this.sessionData.getOhlcData(channelName);
+    }
+
+    public Map<String, OpenOrder>  getOpenOrders() {
+        return this.sessionData.getOpenOrders();
+    }
+
+    public Map getOwnTrades () {
+        return this.sessionData.getOwnTrades();
     }
 }

@@ -1,5 +1,6 @@
 package jk;
 
+import jk.wsocket.service.KrakenHandler;
 import jk.wsocket.service.KrakenWsService;
 import jk.wsocket.service.PrivateTokenService;
 import lombok.val;
@@ -12,8 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -21,20 +21,20 @@ import static org.mockito.Mockito.mock;
  */
 public class SubscriptionTests {
 
-    private KrakenWsService kservice;
+    private KrakenHandler khandler;
     private WebSocketSession session;
 
     @BeforeEach
     public void setup() {
-        this.kservice = new KrakenWsService(mock(PrivateTokenService.class));
+        this.khandler = new KrakenHandler("id", "url");
         this.session = mock(WebSocketSession.class);
     }
 
     @Test
     public void subscribed_ownTrades() {
         val input = "{\"channelName\":\"ownTrades\",\"event\":\"subscriptionStatus\",\"status\":\"subscribed\",\"subscription\":{\"name\":\"ownTrades\"}}";
-        kservice.handleTextMessage(this.session, new TextMessage(input));
-        val ownTrades = kservice.getSessionData().findByName("ownTrades");
+        khandler.handleTextMessage(this.session, new TextMessage(input));
+        val ownTrades = khandler.getChannels().stream().filter(ch -> ch.getSubscriptionName().equalsIgnoreCase("ownTrades")).findFirst().get();
         assertNotNull(ownTrades);
         assertEquals("subscribed", ownTrades.getStatus());
     }
@@ -42,10 +42,10 @@ public class SubscriptionTests {
     @Test
     public void subscribed_ownTrades_twice () {
         val input = "{\"channelName\":\"ownTrades\",\"event\":\"subscriptionStatus\",\"status\":\"subscribed\",\"subscription\":{\"name\":\"ownTrades\"}}";
-        kservice.handleTextMessage(this.session, new TextMessage(input));
+        khandler.handleTextMessage(this.session, new TextMessage(input));
         val input2 = "{\"channelName\":\"ownTrades\",\"event\":\"subscriptionStatus\",\"status\":\"subscribed\",\"subscription\":{\"name\":\"ownTrades\"}}";
-        kservice.handleTextMessage(null, new TextMessage(input2));
-        val ownTrades = kservice.getSessionData().findByName("ownTrades");
+        khandler.handleTextMessage(null, new TextMessage(input2));
+        val ownTrades = khandler.getChannels().stream().filter(ch -> ch.getSubscriptionName().equalsIgnoreCase("ownTrades")).findFirst().get();
         assertNotNull(ownTrades);
         assertEquals("subscribed", ownTrades.getStatus());
     }
@@ -53,7 +53,8 @@ public class SubscriptionTests {
     @Test
     public void subscribed_open_orders () throws IOException {
         val input = Files.readAllBytes(Paths.get("src", "test", "java", "resources", "openOrders.json"));
-        kservice.handleTextMessage(this.session, new TextMessage(input));
-        val orders = kservice.getSessionData().getOpenOrders();
+        khandler.handleTextMessage(this.session, new TextMessage(input));
+        val orders = khandler.getOpenOrders();
+        assertEquals(1, orders.size());
     }
 }

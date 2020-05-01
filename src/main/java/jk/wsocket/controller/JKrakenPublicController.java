@@ -61,7 +61,7 @@ public class JKrakenPublicController {
             return ResponseEntity.ok("{\"msg\": \"server already connected\"}");
         }
         else {
-            val success = this.krakenWs.connectSession();
+            val success = this.krakenWs.connect();
             if (success) {
                 return ResponseEntity.ok("{\"msg\": \"connected to Kraken\"}");
             } else {
@@ -79,15 +79,14 @@ public class JKrakenPublicController {
     @GetMapping (path = {"/tickers", "/tickers/{channelName}"})
     public ResponseEntity<String> tickers (
             @PathVariable (value = "channelName", required = false) String channelName) {
-        val tickerData = this.krakenWs.getSessionData().getTickerData(Optional.ofNullable(channelName));
+        val tickerData = this.krakenWs.getTickerData(Optional.ofNullable(channelName));
         return ResponseEntity.ok(JsonUtils.toJson(tickerData));
     }
 
     @GetMapping (path = {"/ohlc", "/ohlc/{channelName}"})
     public ResponseEntity<String> ohlc (
             @PathVariable (value = "channelName", required = false) String channelName) {
-        val ohlcData = this.krakenWs.getSessionData().getOhlcData(Optional.ofNullable(channelName));
+        val ohlcData = this.krakenWs.getOhlcData(Optional.ofNullable(channelName));
         return ResponseEntity.ok(JsonUtils.toJson(ohlcData));
     }
-
 }
