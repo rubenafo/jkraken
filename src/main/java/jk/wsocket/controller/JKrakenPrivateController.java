@@ -17,7 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@Conditional(value = KrakenAuthCondition.class)
+//@Conditional(value = KrakenAuthCondition.class)
 @Controller
 public class JKrakenPrivateController {
 

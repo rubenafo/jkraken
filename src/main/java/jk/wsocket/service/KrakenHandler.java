@@ -142,7 +142,7 @@ public class KrakenHandler extends TextWebSocketHandler {
     }
 
     public boolean connected () {
-        return this.clientSession.isOpen();
+        return this.clientSession == null ? false : this.clientSession.isOpen();
     }
 
     public List<SubscriptionStatusMsg> getChannels () {
