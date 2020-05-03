@@ -31,7 +31,7 @@ public class JKrakenPublicController {
             @RequestParam (required = false) List<String> pairs,
             @RequestParam(defaultValue = "5") int interval,
             @RequestParam(defaultValue = "10") int depth,
-            @RequestParam(required = true) String name) {
+            @RequestParam String name) {
         LOGGER.debug("subscribe");
         try {
             RequestValidator.validateSubscription(pairs, interval, depth, name);
@@ -40,7 +40,7 @@ public class JKrakenPublicController {
         catch (Exception e) {
             return ResponseEntity.badRequest().body("{error:\"" + e.getMessage() + "\"}");
         }
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.ok("{\"msg\": \"subscribed\"}");
     }
 
     @PostMapping("/unsubscribe")
@@ -51,7 +51,7 @@ public class JKrakenPublicController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<String> ping () {
+    public ResponseEntity<String> status () {
         return ResponseEntity.ok(this.krakenWs.getStatusInfo());
     }
 
@@ -88,5 +88,10 @@ public class JKrakenPublicController {
             @PathVariable (value = "channelName", required = false) String channelName) {
         val ohlcData = this.krakenWs.getOhlcData(Optional.ofNullable(channelName));
         return ResponseEntity.ok(JsonUtils.toJson(ohlcData));
+    }
+
+    @GetMapping("/pairs")
+    public ResponseEntity<String> pairs () {
+        return ResponseEntity.ok(KrakenRestService.getAssetPairs().toString());
     }
 }

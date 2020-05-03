@@ -3,6 +3,7 @@ package jk.wsocket.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import jk.rest.tools.LocalPropLoader;
+import jk.wsocket.validation.RequestValidator;
 import lombok.NonNull;
 import lombok.val;
 import lombok.var;
@@ -25,7 +26,8 @@ public class KrakenWsService extends TextWebSocketHandler {
     private final KrakenHandler publicClient;
     private final boolean publicMode;
 
-    public KrakenWsService(@NonNull PrivateTokenService tokenService) {
+    public KrakenWsService(
+            @NonNull PrivateTokenService tokenService) {
         this.tokenService = tokenService;
         this.authClient = new KrakenHandler("auth", "wss://beta-ws-auth.kraken.com");
         this.publicClient = new KrakenHandler("pub","wss://beta-ws.kraken.com");
@@ -42,9 +44,11 @@ public class KrakenWsService extends TextWebSocketHandler {
         subscription.put("name",name);
         if (isPrivate) {
             subscription.put("token", tokenService.getToken());
+            RequestValidator.assertConnected(this.authClient);
             this.authClient.sendMessage(json.toString());
         }
         else {
+            RequestValidator.assertConnected(this.publicClient);
             this.publicClient.sendMessage(json.toString());
         }
     }
@@ -73,7 +77,7 @@ public class KrakenWsService extends TextWebSocketHandler {
         });
         val privateChannels = json.putArray("authChannels");
         this.authClient.getChannels().forEach(ch -> {
-            channels.addObject().put("channelID", ch.getChannelID()).put("channelName", ch.getChannelName());
+            privateChannels.addObject().put("channelID", ch.getChannelID()).put("channelName", ch.getChannelName());
         });
         return json.toString();
     }

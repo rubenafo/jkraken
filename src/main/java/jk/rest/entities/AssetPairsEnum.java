@@ -1,8 +1,13 @@
 package jk.rest.entities;
 
+import lombok.Getter;
+import lombok.Value;
+
 import java.lang.String;
 
 public final class AssetPairsEnum {
+
+  @Getter
   public enum AssetPairs {
     ADAETH("ADAETH", "ADA/ETH", "currency", "ADA", "currency", "XETH", "unit", "ZUSD", 7, 8, 1, 80, 40),
 

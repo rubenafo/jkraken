@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jk.data.SessionData;
 import jk.wsocket.responses.*;
+import lombok.Getter;
 import lombok.val;
 import lombok.var;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Getter
 public class KrakenHandler extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KrakenHandler.class);
