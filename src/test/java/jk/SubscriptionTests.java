@@ -1,8 +1,6 @@
 package jk;
 
-import jk.wsocket.service.KrakenHandler;
-import jk.wsocket.service.KrakenWsService;
-import jk.wsocket.service.PrivateTokenService;
+import jk.wsocket.service.KrakenJSONHandler;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +19,12 @@ import static org.mockito.Mockito.mock;
  */
 public class SubscriptionTests {
 
-    private KrakenHandler khandler;
+    private KrakenJSONHandler khandler;
     private WebSocketSession session;
 
     @BeforeEach
     public void setup() {
-        this.khandler = new KrakenHandler("id", "url");
+        this.khandler = new KrakenJSONHandler("id", "url");
         this.session = mock(WebSocketSession.class);
     }
 

@@ -1,11 +1,11 @@
 package jk.rest.tools;
 
-import jk.rest.api.KrakenRestService;
-import jk.rest.entities.AssetPairs;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import jk.rest.api.KrakenRestService;
+import jk.rest.entities.AssetPairs;
 import lombok.SneakyThrows;
 import lombok.var;
 

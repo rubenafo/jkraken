@@ -1,7 +1,7 @@
 package jk.wsocket.controller;
 
-import jk.app.JsonUtils;
 import jk.rest.api.KrakenRestService;
+import jk.wsocket.data.JsonUtils;
 import jk.wsocket.service.KrakenWsService;
 import jk.wsocket.validation.RequestValidator;
 import lombok.NonNull;

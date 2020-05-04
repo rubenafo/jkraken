@@ -1,6 +1,5 @@
 package jk.wsocket.responses;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data

@@ -1,7 +1,6 @@
 package jk;
 
-import jk.wsocket.service.KrakenHandler;
-import jk.wsocket.responses.SubscriptionStatusMsg;
+import jk.wsocket.service.KrakenJSONHandler;
 import lombok.val;
 import lombok.var;
 import org.junit.Assert;
@@ -20,12 +19,12 @@ import static org.mockito.Mockito.mock;
 
 public class KhandlerTest {
 
-    private KrakenHandler khandler;
+    private KrakenJSONHandler khandler;
     private WebSocketSession session;
 
     @BeforeEach
     public void setup() {
-        this.khandler = new KrakenHandler("id", "url");
+        this.khandler = new KrakenJSONHandler("id", "url");
         this.session = mock(WebSocketSession.class);
     }
 

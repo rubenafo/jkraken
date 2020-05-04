@@ -22,15 +22,15 @@ public class KrakenWsService extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsService.class);
     private final PrivateTokenService tokenService;
-    private final KrakenHandler authClient;
-    private final KrakenHandler publicClient;
+    private final KrakenJSONHandler authClient;
+    private final KrakenJSONHandler publicClient;
     private final boolean publicMode;
 
     public KrakenWsService(
             @NonNull PrivateTokenService tokenService) {
         this.tokenService = tokenService;
-        this.authClient = new KrakenHandler("auth", "wss://beta-ws-auth.kraken.com");
-        this.publicClient = new KrakenHandler("pub","wss://beta-ws.kraken.com");
+        this.authClient = new KrakenJSONHandler("privateEndpoint", "wss://beta-ws-auth.kraken.com");
+        this.publicClient = new KrakenJSONHandler("publicEndpoint","wss://beta-ws.kraken.com");
         this.publicMode = new LocalPropLoader().keysFound();
     }
 
@@ -69,13 +69,13 @@ public class KrakenWsService extends TextWebSocketHandler {
 
     public String getStatusInfo() {
         var json = new ObjectMapper().createObjectNode();
-        json.put("publicConnection", this.publicClient.connected());
-        json.put("authConnection", this.authClient.connected());
+        json.put("publicEndpoint", this.publicClient.connected());
+        json.put("privateEndpoint", this.authClient.connected());
         val channels = json.putArray("publicChannels");
         this.publicClient.getChannels().forEach(ch -> {
             channels.addObject().put("channelID", ch.getChannelID()).put("channelName", ch.getChannelName());
         });
-        val privateChannels = json.putArray("authChannels");
+        val privateChannels = json.putArray("privateChannels");
         this.authClient.getChannels().forEach(ch -> {
             privateChannels.addObject().put("channelID", ch.getChannelID()).put("channelName", ch.getChannelName());
         });

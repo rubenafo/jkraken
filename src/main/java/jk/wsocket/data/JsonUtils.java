@@ -1,4 +1,4 @@
-package jk.app;
+package jk.wsocket.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.val;

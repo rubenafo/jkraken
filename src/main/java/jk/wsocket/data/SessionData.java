@@ -1,15 +1,17 @@
-package jk.data;
+package jk.wsocket.data;
 
 
 import jk.wsocket.responses.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.val;
 import lombok.var;
 import tech.tablesaw.api.*;
 
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

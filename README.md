@@ -2,14 +2,15 @@
 A REST server to interact with [Kraken API](https://www.kraken.com/features/api) using websockets and a REST client.  
 JKraken provides:
 * subscription channels and position/trades tracking using [Kraken websockets](https://docs.kraken.com/websockets/#overview)
-* balance, positions and order handling using [Kraken API](https://www.kraken.com/features/api)
+* balance and trades using [Kraken API](https://www.kraken.com/features/api)
+* add/remove orders
 * private keys handling and auth token refresh.
 
 #### Subscription channels
 
-JKraken exposes endpoints to subscribe to Kraken channels using [websockets](https://docs.kraken.com/websockets/#overview)
-* /subscribe : subscribes to _ticker_, _ohlc_, _spread_ data
-* /unsubscribe
+JKraken exposes endpoints to subscribe to Kraken channels using [websockets](https://docs.kraken.com/websockets/#overview):
+* public channels: _ticker_, _ohlc_, _spread_ data
+* private channels: _ownTrades_, _openOrders_
 
 
 #### Kraken API current support (WIP)

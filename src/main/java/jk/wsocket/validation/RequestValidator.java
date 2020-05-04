@@ -2,8 +2,7 @@ package jk.wsocket.validation;
 
 
 import jk.rest.entities.AssetPairsEnum;
-import jk.wsocket.service.KrakenHandler;
-import jk.wsocket.service.KrakenWsService;
+import jk.wsocket.service.KrakenJSONHandler;
 import lombok.val;
 
 import java.util.Arrays;
@@ -47,7 +46,7 @@ public class RequestValidator {
         }
     }
 
-    public static void assertConnected (KrakenHandler handler) {
+    public static void assertConnected (KrakenJSONHandler handler) {
         if (handler.connected() == false) {
             throw new RuntimeException(String.format("%s handler not connected", handler.getId()));
         }

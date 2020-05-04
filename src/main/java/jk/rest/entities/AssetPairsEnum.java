@@ -1,9 +1,6 @@
 package jk.rest.entities;
 
 import lombok.Getter;
-import lombok.Value;
-
-import java.lang.String;
 
 public final class AssetPairsEnum {
 

@@ -2,7 +2,7 @@ package jk.wsocket.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jk.data.SessionData;
+import jk.wsocket.data.SessionData;
 import jk.wsocket.responses.*;
 import lombok.Getter;
 import lombok.val;
@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.Optional;
 
 @Getter
-public class KrakenHandler extends TextWebSocketHandler {
+public class KrakenJSONHandler extends TextWebSocketHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenJSONHandler.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
     private WebSocketSession clientSession;
@@ -35,7 +35,7 @@ public class KrakenHandler extends TextWebSocketHandler {
     private final String id;
     private final String url;
 
-    public KrakenHandler(String clientId, String url) {
+    public KrakenJSONHandler(String clientId, String url) {
         this.sessionData = new SessionData();
         this.id = clientId;
         this.url = url;
@@ -63,6 +63,7 @@ public class KrakenHandler extends TextWebSocketHandler {
     public void close () {
         try {
             this.clientSession.close();
+            LOGGER.info("{}: session closed", this.id);
         } catch (IOException e) {
             e.printStackTrace();
         }
