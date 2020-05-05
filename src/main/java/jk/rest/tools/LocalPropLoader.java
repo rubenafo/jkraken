@@ -1,8 +1,9 @@
 package jk.rest.tools;
 
+import jk.krakenex.KrakenEnums;
+import jk.wsocket.data.Logs;
+import lombok.Getter;
 import lombok.val;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,36 +11,34 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-public class LocalPropLoader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalPropLoader.class);
+import static jk.krakenex.KrakenEnums.ConfigProperties.PAPI;
 
+public class LocalPropLoader {
+
+    @Getter
     private Properties props;
 
     public LocalPropLoader() {
         this.props = new Properties();
         val propertiesFile = System.getProperty("krakenkeys");
         if (propertiesFile == null) {
-            LOGGER.error("Missing jk.props file. Private methods won't work");
+            Logs.error("Missing jk.props file. Private methods won't work");
         }
         try {
             val inputStream = new ByteArrayInputStream(Files.readAllBytes(Paths.get(propertiesFile)));
             props.load(inputStream);
-            LOGGER.info("Kraken keys successfully read from file: " + propertiesFile);
-
+            Logs.info("Config variables sucessfully read from file: " + propertiesFile);
         } catch (IOException e) {
             throw new RuntimeException("Invalid path for Kraken keys file: " + propertiesFile);
-        }
-        if (!keysFound()) {
-            LOGGER.error("Keys couldn't be found in key file. Private methods won't work");
         }
     }
 
     public String getApi() {
-        return this.props.getProperty("api");
+        return this.props.getProperty(KrakenEnums.ConfigProperties.API.getConfigName());
     }
 
     public String getApiSecret() {
-        return this.props.getProperty("papi");
+        return this.props.getProperty(PAPI.getConfigName());
     }
 
     public boolean keysFound() {

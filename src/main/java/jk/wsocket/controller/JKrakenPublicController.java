@@ -3,7 +3,7 @@ package jk.wsocket.controller;
 import jk.rest.api.KrakenRestService;
 import jk.wsocket.data.JsonUtils;
 import jk.wsocket.service.KrakenWsService;
-import jk.wsocket.validation.RequestValidator;
+import jk.wsocket.data.RequestValidator;
 import lombok.NonNull;
 import lombok.val;
 import org.slf4j.Logger;

@@ -20,4 +20,5 @@ public final class Logs {
         LOGGER.info(msg, args);
     }
 
+    public static void error (String msg, Object ...args) { LOGGER.error(msg, args);}
 }

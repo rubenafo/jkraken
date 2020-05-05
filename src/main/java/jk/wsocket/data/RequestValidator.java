@@ -1,24 +1,22 @@
-package jk.wsocket.validation;
+package jk.wsocket.data;
 
 
+import jk.krakenex.KrakenEnums;
 import jk.rest.entities.AssetPairsEnum;
-import jk.wsocket.service.KrakenJSONHandler;
+import jk.wsocket.service.KrakenWsHandler;
 import lombok.val;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+
+import static javax.swing.text.html.parser.DTDConstants.NAMES;
+import static jk.krakenex.KrakenEnums.DEPTHS;
 
 /**
  * Validates requests parameters
  */
 public class RequestValidator {
-
-    private static Set<Integer> DEPTHS = Set.of(10, 25, 100, 500, 1000);
-    private static Set<Integer> INTERVALS = Set.of(1, 5, 15, 30, 60, 240, 1440, 10080, 21600);
-    private static Set<String> NAMES = Set.of("ticker","ohlc","trade","book","spread","owntrades","openorders");
-    private static Set<String> REQUIRING_PAIR = Set.of("ticker", "ohlc", "trade");
 
     public static void validateSubscription (List<String> pairs, int interval, int depth, String name) {
         val validPairs = Arrays.stream(AssetPairsEnum.AssetPairs.values())
@@ -32,21 +30,21 @@ public class RequestValidator {
                 }
             });
         }
-        if (REQUIRING_PAIR.contains(name.toLowerCase()) && pairs == null) {
+        if (!KrakenEnums.Channels.contains(name) && pairs == null) {
             throw new RuntimeException(String.format("Invalid pair: pair cannot be empty for channel=%s", name));
         }
-        if (!INTERVALS.contains(interval)) {
-            throw new RuntimeException(String.format("Invalid interval:%s . Expected:%s", interval, INTERVALS));
+        if (!KrakenEnums.INTERVALS.contains(interval)) {
+            throw new RuntimeException(String.format("Invalid interval:%s . Expected:%s", interval, KrakenEnums.INTERVALS));
         }
         if (!DEPTHS.contains(depth)) {
             throw new RuntimeException(String.format("Invalid depth:%s . Expected:%s", depth, DEPTHS));
         }
-        if (!NAMES.contains(name.toLowerCase())) {
+        if (!KrakenEnums.Channels.contains(name)) {
             throw new RuntimeException(String.format("Invalid name:%s . Expected:%s", name, NAMES));
         }
     }
 
-    public static void assertConnected (KrakenJSONHandler handler) {
+    public static void assertConnected (KrakenWsHandler handler) {
         if (handler.connected() == false) {
             throw new RuntimeException(String.format("%s handler not connected", handler.getId()));
         }

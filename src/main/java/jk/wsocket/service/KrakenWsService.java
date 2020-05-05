@@ -3,7 +3,7 @@ package jk.wsocket.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import jk.rest.tools.LocalPropLoader;
-import jk.wsocket.validation.RequestValidator;
+import jk.wsocket.data.RequestValidator;
 import lombok.NonNull;
 import lombok.val;
 import lombok.var;
@@ -22,15 +22,18 @@ public class KrakenWsService extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsService.class);
     private final PrivateTokenService tokenService;
-    private final KrakenJSONHandler authClient;
-    private final KrakenJSONHandler publicClient;
+    private final LocalPropLoaderService propsService;
+    private final KrakenWsHandler authClient;
+    private final KrakenWsHandler publicClient;
     private final boolean publicMode;
 
     public KrakenWsService(
-            @NonNull PrivateTokenService tokenService) {
+            @NonNull PrivateTokenService tokenService,
+            @NonNull LocalPropLoaderService propsService) {
         this.tokenService = tokenService;
-        this.authClient = new KrakenJSONHandler("privateEndpoint", "wss://beta-ws-auth.kraken.com");
-        this.publicClient = new KrakenJSONHandler("publicEndpoint","wss://beta-ws.kraken.com");
+        this.propsService = propsService;
+        this.authClient = new KrakenWsHandler("privateEndpoint", propsService.getPrivateAPI());
+        this.publicClient = new KrakenWsHandler("publicEndpoint",propsService.getPublicAPI());
         this.publicMode = new LocalPropLoader().keysFound();
     }
 

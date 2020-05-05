@@ -2,6 +2,7 @@ package jk.wsocket.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jk.wsocket.data.Logs;
 import jk.wsocket.data.SessionData;
 import jk.wsocket.responses.*;
 import lombok.Getter;
@@ -25,9 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 
 @Getter
-public class KrakenJSONHandler extends TextWebSocketHandler {
+public class KrakenWsHandler extends TextWebSocketHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenJSONHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsHandler.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
     private WebSocketSession clientSession;
@@ -35,7 +36,7 @@ public class KrakenJSONHandler extends TextWebSocketHandler {
     private final String id;
     private final String url;
 
-    public KrakenJSONHandler(String clientId, String url) {
+    public KrakenWsHandler(String clientId, String url) {
         this.sessionData = new SessionData();
         this.id = clientId;
         this.url = url;
@@ -53,6 +54,7 @@ public class KrakenJSONHandler extends TextWebSocketHandler {
         try {
             var webSocketClient = new StandardWebSocketClient();
             this.clientSession = webSocketClient.doHandshake(this, new WebSocketHttpHeaders(), URI.create(url)).get();
+            Logs.info("{ successfully connected to {} ", this.id, this.url);
             return true;
         } catch (Exception e) {
             LOGGER.error("Exception while creating websockets", e);
