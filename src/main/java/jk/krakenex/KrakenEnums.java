@@ -17,6 +17,7 @@ public final class KrakenEnums {
         OWN_TRADES("ownTrades", true),
         OPEN_ORDERS ("openOrders", true);
 
+        @Getter
         private final String channelName;
         private final boolean isPrivate;
 

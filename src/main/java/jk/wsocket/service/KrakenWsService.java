@@ -32,8 +32,8 @@ public class KrakenWsService extends TextWebSocketHandler {
             @NonNull LocalPropLoaderService propsService) {
         this.tokenService = tokenService;
         this.propsService = propsService;
-        this.authClient = new KrakenWsHandler("privateEndpoint", propsService.getPrivateAPI());
-        this.publicClient = new KrakenWsHandler("publicEndpoint",propsService.getPublicAPI());
+        this.authClient = new KrakenWsHandler("privateEndpoint", propsService.getPrivateAPI().get());
+        this.publicClient = new KrakenWsHandler("publicEndpoint",propsService.getPublicAPI().get());
         this.publicMode = new LocalPropLoader().keysFound();
     }
 

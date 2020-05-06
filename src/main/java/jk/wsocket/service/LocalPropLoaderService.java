@@ -12,7 +12,7 @@ import java.util.Optional;
 import static jk.krakenex.KrakenEnums.ConfigProperties.CONNECT_ON_START;
 
 /**
- * Parses and validates provided properties
+ * Parses and validates provided properties from local config file
  */
 @Service
 public class LocalPropLoaderService {
@@ -29,16 +29,18 @@ public class LocalPropLoaderService {
         return Optional.ofNullable(this.propsLoader.getProps().getProperty(property.getConfigName()));
     }
 
-    public String getPublicAPI () {
-        return this.propsLoader.getProps().getProperty(KrakenEnums.ConfigProperties.PUBLIC_ENDPOINT.getConfigName());
+    public Optional<String> getPublicAPI () {
+        return Optional.ofNullable(
+                this.propsLoader.getProps().getProperty(KrakenEnums.ConfigProperties.PUBLIC_ENDPOINT.getConfigName()));
     }
 
-    public String getPrivateAPI () {
-        return this.propsLoader.getProps().getProperty(KrakenEnums.ConfigProperties.PRIVATE_ENDPOINT.getConfigName());
+    public Optional<String> getPrivateAPI () {
+        return Optional.ofNullable(
+                this.propsLoader.getProps().getProperty(KrakenEnums.ConfigProperties.PRIVATE_ENDPOINT.getConfigName()));
     }
 
     public boolean connectOnStart () {
         val connect = this.propsLoader.getProps().getProperty(CONNECT_ON_START.getConfigName());
-        return connect != null && Boolean.parseBoolean(connect);
+        return connect == null || Boolean.parseBoolean(connect);
     }
 }
