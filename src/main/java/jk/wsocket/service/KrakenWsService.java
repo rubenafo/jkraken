@@ -16,6 +16,7 @@ import tech.tablesaw.api.Table;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class KrakenWsService extends TextWebSocketHandler {
@@ -41,18 +42,22 @@ public class KrakenWsService extends TextWebSocketHandler {
         boolean isPrivate = name.equalsIgnoreCase("ownTrades") || name.equalsIgnoreCase("openOrders");
         var json = new ObjectMapper().createObjectNode();
         json.put("event", "subscribe");
+        val reqId = Math.abs(new Random().nextInt());
+        json.put("reqid", reqId);
         if (pairs != null)
             json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(pairs));
         val subscription = json.putObject("subscription");
         subscription.put("name",name);
+        subscription.put("interval", interval);
+        subscription.put("depth", depth);
         if (isPrivate) {
             subscription.put("token", tokenService.getToken());
             RequestValidator.assertConnected(this.authClient);
-            this.authClient.sendMessage(json.toString());
+            this.authClient.sendAndConfirm(json.toString(), reqId);
         }
         else {
             RequestValidator.assertConnected(this.publicClient);
-            this.publicClient.sendMessage(json.toString());
+            this.publicClient.sendAndConfirm(json.toString(), reqId);
         }
     }
 

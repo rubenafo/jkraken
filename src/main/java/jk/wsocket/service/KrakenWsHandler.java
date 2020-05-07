@@ -24,22 +24,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class KrakenWsHandler extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsHandler.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
-
-    private WebSocketSession clientSession;
+    private final ConcurrentHashMap<Integer, String> errorMessages;
     private final SessionData sessionData;
     private final String id;
     private final String url;
+    private WebSocketSession clientSession;
 
     public KrakenWsHandler(String clientId, String url) {
         this.sessionData = new SessionData();
         this.id = clientId;
         this.url = url;
+        this.errorMessages = new ConcurrentHashMap<>(500);
     }
 
     public void sendMessage(String msg) {
@@ -47,6 +49,28 @@ public class KrakenWsHandler extends TextWebSocketHandler {
             this.clientSession.sendMessage(new TextMessage(msg));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void sendAndConfirm (String msg, int reqId) {
+        String errorMsg = null;
+        try {
+            this.clientSession.sendMessage(new TextMessage(msg));
+            int i = 1;
+            do {
+                errorMsg = this.errorMessages.get(reqId);
+                Thread.sleep(i * 1000);
+            }
+            while (i++ < 4 && errorMsg == null);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        if (errorMsg == null) {
+            throw new RuntimeException(String.format("Timeout while waiting for reqId=%s response", reqId));
+        } else {
+            if (!errorMsg.isEmpty()) {
+                throw new RuntimeException(errorMsg);
+            }
         }
     }
 
@@ -84,6 +108,11 @@ public class KrakenWsHandler extends TextWebSocketHandler {
         try {
             Object obj = this.jsonMapper.readValue(rawMsg, Object.class);
             if (obj instanceof Map) {
+                if (((Map) obj).get("reqid") != null) {
+                    val reqId = (Integer) ((Map) obj).get("reqid");
+                    val errorMsg = (String) ((Map) obj).get("errorMessage");
+                    this.errorMessages.put(reqId, errorMsg);
+                }
                 val eventType = (String) ((Map) obj).get("event");
                 switch (eventType) {
                     case "ping": case "pong": case "heartbeat": break;
@@ -140,10 +169,6 @@ public class KrakenWsHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         LOGGER.info("established connection - " + session);
-    }
-
-    public Optional<SubscriptionStatusMsg> subscribed (int channelId) {
-        return Optional.ofNullable(this.sessionData.getSubscribedChannels().get(channelId));
     }
 
     public boolean connected () {

@@ -41,7 +41,7 @@ public class OnceReadyService {
         else {
             Logs.info("Connecting to Kraken Exchange...");
             this.krakenService.connect();
-            this.krakenService.subscribe(null, 0, 0, KrakenEnums.Channels.OWN_TRADES.getChannelName());
+           // this.krakenService.subscribe(null, 0, 0, KrakenEnums.Channels.OWN_TRADES.getChannelName());
             if (keysProvided) {
                 val balance = this.krakenRestService.getBalance();
                 if (balance != null) {
