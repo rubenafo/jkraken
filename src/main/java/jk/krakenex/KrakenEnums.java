@@ -40,7 +40,8 @@ public final class KrakenEnums {
         PUBLIC_ENDPOINT("public_ws"),
         PRIVATE_ENDPOINT("private_ws"),
         SUBSCRIBE_TO ("subscribe"),
-        CONNECT_ON_START ("connect_on_start");
+        CONNECT_ON_START ("connect_on_start"),
+        DEBUG_MESSAGES ("debug_messages");
 
         @Getter
         private final String configName;

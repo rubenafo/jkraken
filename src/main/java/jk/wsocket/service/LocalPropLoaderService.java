@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Optional;
 
-import static jk.krakenex.KrakenEnums.ConfigProperties.CONNECT_ON_START;
+import static jk.krakenex.KrakenEnums.ConfigProperties.*;
 
 /**
  * Parses and validates provided properties from local config file
@@ -42,5 +42,10 @@ public class LocalPropLoaderService {
     public boolean connectOnStart () {
         val connect = this.propsLoader.getProps().getProperty(CONNECT_ON_START.getConfigName());
         return connect == null || Boolean.parseBoolean(connect);
+    }
+
+    public boolean debugMessages () {
+        val printHeartbeat = this.propsLoader.getProps().getProperty(DEBUG_MESSAGES.getConfigName());
+        return printHeartbeat != null && Boolean.parseBoolean(printHeartbeat);
     }
 }

@@ -1,6 +1,7 @@
 package jk;
 
 import jk.wsocket.service.KrakenWsHandler;
+import jk.wsocket.service.LocalPropLoaderService;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,8 @@ public class SubscriptionTests {
 
     @BeforeEach
     public void setup() {
-        this.khandler = new KrakenWsHandler("id", "url");
+        val localPropsService = new LocalPropLoaderService();
+        this.khandler = new KrakenWsHandler(localPropsService,"id", "url");
         this.session = mock(WebSocketSession.class);
     }
 

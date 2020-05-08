@@ -1,6 +1,7 @@
 package jk;
 
 import jk.wsocket.service.KrakenWsHandler;
+import jk.wsocket.service.LocalPropLoaderService;
 import lombok.val;
 import lombok.var;
 import org.junit.Assert;
@@ -24,7 +25,8 @@ public class KhandlerTest {
 
     @BeforeEach
     public void setup() {
-        this.khandler = new KrakenWsHandler("id", "url");
+        val localPropsService = new LocalPropLoaderService();
+        this.khandler = new KrakenWsHandler(localPropsService,"id", "url");
         this.session = mock(WebSocketSession.class);
     }
 
@@ -77,5 +79,13 @@ public class KhandlerTest {
         val orderUpdate = Files.readAllBytes(Paths.get("src", "test", "java", "resources", "orderUpdate.json"));
         khandler.handleTextMessage(this.session, new TextMessage(orderUpdate));
         assertEquals("closed", khandler.getOpenOrders().get("OGTT3Y-C6I3P-XRI6HX").getStatus());
+    }
+
+    @Test
+    public void session_stores_reqId() {
+        val subscriptionResponse = "{\"channelID\":1204,\"channelName\":\"ticker\",\"event\":\"subscriptionStatus\",\"pair\":\"ADA/ETH\",\"reqid\":1278173371,\"status\":\"subscribed\",\"subscription\":{\"name\":\"ticker\"}}";
+        khandler.handleTextMessage(this.session, new TextMessage(subscriptionResponse));
+        assertTrue(khandler.getErrorMessages().containsKey(1278173371));
+        assertTrue(khandler.getErrorMessages().get(1278173371).equals(""));
     }
 }

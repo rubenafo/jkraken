@@ -6,10 +6,9 @@ import jk.wsocket.data.Logs;
 import jk.wsocket.data.SessionData;
 import jk.wsocket.responses.*;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.val;
 import lombok.var;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -29,15 +28,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class KrakenWsHandler extends TextWebSocketHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsHandler.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private final ConcurrentHashMap<Integer, String> errorMessages;
     private final SessionData sessionData;
     private final String id;
     private final String url;
+    private final boolean debugMessages;
     private WebSocketSession clientSession;
 
-    public KrakenWsHandler(String clientId, String url) {
+    public KrakenWsHandler(@NonNull LocalPropLoaderService propsService, String clientId, String url) {
+        this.debugMessages = propsService.debugMessages();
         this.sessionData = new SessionData();
         this.id = clientId;
         this.url = url;
@@ -81,7 +81,7 @@ public class KrakenWsHandler extends TextWebSocketHandler {
             Logs.info("{ successfully connected to {} ", this.id, this.url);
             return true;
         } catch (Exception e) {
-            LOGGER.error("Exception while creating websockets", e);
+            Logs.error("Exception while creating websockets", e);
         }
         return false;
     }
@@ -89,7 +89,7 @@ public class KrakenWsHandler extends TextWebSocketHandler {
     public void close () {
         try {
             this.clientSession.close();
-            LOGGER.info("{}: session closed", this.id);
+            Logs.info("{}: session closed", this.id);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,29 +97,31 @@ public class KrakenWsHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        LOGGER.info("Kraken ws: connection closed " + session.getUri());
+        Logs.info("Kraken ws: connection closed " + session.getUri());
         this.sessionData.clearChannels();
     }
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        LOGGER.info("received message - " + message.getPayload());
+        if (this.debugMessages) {
+            Logs.info("received message - " + message.getPayload());
+        }
         String rawMsg = message.getPayload();
         try {
             Object obj = this.jsonMapper.readValue(rawMsg, Object.class);
             if (obj instanceof Map) {
+                val eventType = (String) ((Map) obj).get("event");
                 if (((Map) obj).get("reqid") != null) {
                     val reqId = (Integer) ((Map) obj).get("reqid");
                     val errorMsg = (String) ((Map) obj).get("errorMessage");
-                    this.errorMessages.put(reqId, errorMsg);
+                    this.errorMessages.put(reqId, errorMsg == null ? "" : errorMsg);
                 }
-                val eventType = (String) ((Map) obj).get("event");
                 switch (eventType) {
-                    case "ping": case "pong": case "heartbeat": break;
+                    case "ping": case "pong": case "heartbeat": case "systemStatus": break;
                     case "subscriptionStatus":
                         val status = ((Map) obj).get("status");
                         if (status.equals("error")) {
-                            LOGGER.debug("Error: " + ((Map) (obj)).get("errorMessage"));
+                            Logs.debug("Error: " + ((Map) (obj)).get("errorMessage"));
                         }
                         else {
                             val subscribeMsg = this.jsonMapper.readValue(rawMsg, SubscriptionStatusMsg.class);
@@ -127,7 +129,7 @@ public class KrakenWsHandler extends TextWebSocketHandler {
                         }
                         break;
                     default:
-                        LOGGER.debug("Error: ignoring unknown event type received={}", eventType);
+                        Logs.debug("Error: ignoring unknown event type received={}", eventType);
                 }
             } else if (obj instanceof List) {
                 val jsonList = (List) obj;
@@ -168,7 +170,7 @@ public class KrakenWsHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        LOGGER.info("established connection - " + session);
+        Logs.info("established connection - " + session);
     }
 
     public boolean connected () {

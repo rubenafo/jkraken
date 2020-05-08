@@ -8,7 +8,11 @@ import lombok.NonNull;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,7 +54,7 @@ public class JKrakenPublicController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/status")
+    @GetMapping(value="/status", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> status () {
         return ResponseEntity.ok(this.krakenWs.getStatusInfo());
     }
@@ -76,7 +80,7 @@ public class JKrakenPublicController {
         return ResponseEntity.ok("{}");
     }
 
-    @GetMapping (path = {"/tickers", "/tickers/{channelName}"})
+    @GetMapping (path = {"/tickers", "/tickers/{channelName}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> tickers (
             @PathVariable (value = "channelName", required = false) String channelName) {
         val tickerData = this.krakenWs.getTickerData(Optional.ofNullable(channelName));
@@ -90,8 +94,9 @@ public class JKrakenPublicController {
         return ResponseEntity.ok(JsonUtils.toJson(ohlcData));
     }
 
-    @GetMapping("/pairs")
-    public ResponseEntity<String> pairs () {
+    @GetMapping(value = "/pairs", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> pairs (
+    ) {
         return ResponseEntity.ok(KrakenRestService.getAssetPairs().toString());
     }
 }

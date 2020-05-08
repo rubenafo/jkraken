@@ -23,7 +23,6 @@ public class KrakenWsService extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KrakenWsService.class);
     private final PrivateTokenService tokenService;
-    private final LocalPropLoaderService propsService;
     private final KrakenWsHandler authClient;
     private final KrakenWsHandler publicClient;
     private final boolean publicMode;
@@ -32,9 +31,8 @@ public class KrakenWsService extends TextWebSocketHandler {
             @NonNull PrivateTokenService tokenService,
             @NonNull LocalPropLoaderService propsService) {
         this.tokenService = tokenService;
-        this.propsService = propsService;
-        this.authClient = new KrakenWsHandler("privateEndpoint", propsService.getPrivateAPI().get());
-        this.publicClient = new KrakenWsHandler("publicEndpoint",propsService.getPublicAPI().get());
+        this.authClient = new KrakenWsHandler(propsService, "privateEndpoint", propsService.getPrivateAPI().get());
+        this.publicClient = new KrakenWsHandler(propsService,"publicEndpoint",propsService.getPublicAPI().get());
         this.publicMode = new LocalPropLoader().keysFound();
     }
 
@@ -48,8 +46,8 @@ public class KrakenWsService extends TextWebSocketHandler {
             json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(pairs));
         val subscription = json.putObject("subscription");
         subscription.put("name",name);
-        subscription.put("interval", interval);
-        subscription.put("depth", depth);
+       // subscription.put("interval", interval);
+       // subscription.put("depth", depth);
         if (isPrivate) {
             subscription.put("token", tokenService.getToken());
             RequestValidator.assertConnected(this.authClient);
@@ -91,7 +89,7 @@ public class KrakenWsService extends TextWebSocketHandler {
     }
 
     public boolean isConnected() {
-        return this.publicMode ? this.publicClient.connected() : this.publicClient.connected() & this.authClient.connected();
+        return this.publicMode ? this.publicClient.connected() : this.publicClient.connected() && this.authClient.connected();
     }
 
     public boolean connect () {

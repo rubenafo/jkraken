@@ -1,6 +1,10 @@
 package jk.rest.entities;
 
 import lombok.Getter;
+import lombok.Value;
+
+import java.lang.String;
+
 
 public final class AssetPairsEnum {
 
@@ -38,9 +42,15 @@ public final class AssetPairsEnum {
 
     BATXBT("BATXBT", "BAT/XBT", "currency", "BAT", "currency", "XXBT", "unit", "ZUSD", 8, 8, 1, 80, 40),
 
+    BCHETH("BCHETH", "BCH/ETH", "currency", "BCH", "currency", "XETH", "unit", "ZUSD", 4, 8, 1, 80, 40),
+
     BCHEUR("BCHEUR", "BCH/EUR", "currency", "BCH", "currency", "ZEUR", "unit", "ZUSD", 1, 8, 1, 80, 40),
 
+    BCHGBP("BCHGBP", "BCH/GBP", "currency", "BCH", "currency", "ZGBP", "unit", "ZUSD", 2, 8, 1, 80, 40),
+
     BCHUSD("BCHUSD", "BCH/USD", "currency", "BCH", "currency", "ZUSD", "unit", "ZUSD", 1, 8, 1, 80, 40),
+
+    BCHUSDT("BCHUSDT", "BCH/USDT", "currency", "BCH", "currency", "USDT", "unit", "ZUSD", 2, 8, 1, 80, 40),
 
     BCHXBT("BCHXBT", "BCH/XBT", "currency", "BCH", "currency", "XXBT", "unit", "ZUSD", 5, 8, 1, 80, 40),
 
@@ -112,6 +122,12 @@ public final class AssetPairsEnum {
 
     LSKXBT("LSKXBT", "LSK/XBT", "currency", "LSK", "currency", "XXBT", "unit", "ZUSD", 9, 8, 1, 80, 40),
 
+    LTCETH("LTCETH", "LTC/ETH", "currency", "XLTC", "currency", "XETH", "unit", "ZUSD", 5, 8, 1, 80, 40),
+
+    LTCGBP("LTCGBP", "LTC/GBP", "currency", "XLTC", "currency", "ZGBP", "unit", "ZUSD", 5, 8, 1, 80, 40),
+
+    LTCUSDT("LTCUSDT", "LTC/USDT", "currency", "XLTC", "currency", "USDT", "unit", "ZUSD", 5, 8, 1, 80, 40),
+
     NANOETH("NANOETH", "NANO/ETH", "currency", "NANO", "currency", "XETH", "unit", "ZUSD", 8, 8, 1, 80, 40),
 
     NANOEUR("NANOEUR", "NANO/EUR", "currency", "NANO", "currency", "ZEUR", "unit", "ZUSD", 6, 8, 1, 80, 40),
@@ -170,9 +186,13 @@ public final class AssetPairsEnum {
 
     USDTCAD("USDTCAD", "USDT/CAD", "currency", "USDT", "currency", "ZCAD", "unit", "ZUSD", 4, 8, 1, 80, 40),
 
+    USDTCHF("USDTCHF", "USDT/CHF", "currency", "USDT", "currency", "CHF", "unit", "ZUSD", 5, 8, 1, 80, 40),
+
     USDTEUR("USDTEUR", "USDT/EUR", "currency", "USDT", "currency", "ZEUR", "unit", "ZUSD", 4, 8, 1, 80, 40),
 
     USDTGBP("USDTGBP", "USDT/GBP", "currency", "USDT", "currency", "ZGBP", "unit", "ZUSD", 4, 8, 1, 80, 40),
+
+    USDTJPY("USDTJPY", "USDT/JPY", "currency", "USDT", "currency", "ZJPY", "unit", "ZUSD", 3, 8, 1, 80, 40),
 
     USDTZUSD("USDTUSD", "USDT/USD", "currency", "USDT", "currency", "ZUSD", "unit", "ZUSD", 4, 8, 1, 80, 40),
 
@@ -249,6 +269,12 @@ public final class AssetPairsEnum {
     XREPZEUR("REPEUR", "REP/EUR", "currency", "XREP", "currency", "ZEUR", "unit", "ZUSD", 3, 8, 1, 80, 40),
 
     XREPZUSD("REPUSD", "REP/USD", "currency", "XREP", "currency", "ZUSD", "unit", "ZUSD", 3, 8, 1, 80, 40),
+
+    XRPETH("XRPETH", "XRP/ETH", "currency", "XXRP", "currency", "XETH", "unit", "ZUSD", 7, 8, 1, 80, 40),
+
+    XRPGBP("XRPGBP", "XRP/GBP", "currency", "XXRP", "currency", "ZGBP", "unit", "ZUSD", 5, 8, 1, 80, 40),
+
+    XRPUSDT("XRPUSDT", "XRP/USDT", "currency", "XXRP", "currency", "USDT", "unit", "ZUSD", 5, 8, 1, 80, 40),
 
     XTZETH("XTZETH", "XTZ/ETH", "currency", "XTZ", "currency", "XETH", "unit", "ZUSD", 7, 8, 1, 80, 40),
 
