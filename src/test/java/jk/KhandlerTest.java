@@ -88,4 +88,10 @@ public class KhandlerTest {
         assertTrue(khandler.getErrorMessages().containsKey(1278173371));
         assertTrue(khandler.getErrorMessages().get(1278173371).equals(""));
     }
+
+    @Test
+    public void session_handles_already_subscribed () {
+        val alreadySubscribedResponse = "{\"errorMessage\":\"Already subscribed\",\"event\":\"subscriptionStatus\",\"reqid\":1998689890,\"status\":\"error\",\"subscription\":{\"name\":\"ownTrades\"}}";
+        // TODO
+    }
 }

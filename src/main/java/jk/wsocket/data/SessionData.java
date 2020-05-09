@@ -23,6 +23,9 @@ import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 @Data
 public class SessionData {
 
+    private static final int OPEN_ORDERS_CHANNEL = -1;
+    private static final int OWN_TRADES_CHANNEL = -2;
+
     private static final DateTimeFormatter formatter = ISO_INSTANT;
     private Map<Integer, SubscriptionStatusMsg> subscribedChannels;
     private final Table tickerData;
@@ -132,10 +135,12 @@ public class SessionData {
     }
 
     public void updateSubscription(SubscriptionStatusMsg msg) {
+        val channelId = msg.getChannelName().equalsIgnoreCase("ownTrades") ? OWN_TRADES_CHANNEL :
+                msg.getChannelName().equalsIgnoreCase("openOrders") ? OPEN_ORDERS_CHANNEL : msg.getChannelID();
         if (msg.getStatus().equals("unsubscribed")) {
-            this.subscribedChannels.remove(msg.getChannelID());
+            this.subscribedChannels.remove(channelId);
         }
-        this.subscribedChannels.put(msg.getChannelID(), msg);
+        this.subscribedChannels.put(channelId, msg);
     }
 
     public SubscriptionStatusMsg findByName (String name) {

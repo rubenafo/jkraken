@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,4 +58,8 @@ public class SubscriptionTests {
         val orders = khandler.getOpenOrders();
         assertEquals(1, orders.size());
     }
+
+    // Open order subscription + message with empty list
+    // {"channelName":"openOrders","event":"subscriptionStatus","reqid":1240715762,"status":"subscribed","subscription":{"name":"openOrders"}}
+    // 2020-05-09 08:28:22.363  INFO 6279 --- [ient-SecureIO-1] jk.app.JKrakenApp                        : received message - [[],"openOrders"]
 }
