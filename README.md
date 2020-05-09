@@ -1,5 +1,5 @@
 # JKraken
-A REST server to interact with [Kraken API](https://www.kraken.com/features/api) using websockets and a REST client.  
+A REST server to interact with [Kraken API](https://www.kraken.com/features/api) aiming to unify Kraken WebSocket and Rst APIs in one single place.  
 JKraken provides:
 * subscription channels and position/trades tracking using [Kraken websockets](https://docs.kraken.com/websockets/#overview)
 * balance and trades using [Kraken API](https://www.kraken.com/features/api)
