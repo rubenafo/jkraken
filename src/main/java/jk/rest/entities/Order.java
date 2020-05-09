@@ -105,4 +105,15 @@ public class Order {
                 .build();
         return order;
     }
+
+    public static Order createBuyOrder (AssetPairsEnum.AssetPairs pair, double price, double qty) {
+        return new OrderBuilder()
+                .pair(pair)
+                .type(Type.BUY.type)
+                .ordertype(OrderType.LIMIT)
+                .volume(qty)
+                .price(new BigDecimal(price))
+                .validate(false)
+                .build();
+    }
 }

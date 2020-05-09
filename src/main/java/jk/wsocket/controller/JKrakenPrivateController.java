@@ -52,9 +52,9 @@ public class JKrakenPrivateController {
 
     @PostMapping(path = {"/orders/add"})
     public ResponseEntity<Object> addTrade () {
-        var sell = Order.createSellOrder(AssetPairsEnum.AssetPairs.XBTUSDC, 44d,20);
-        val orderInfo = new KrakenRestService().addOrder(sell);
-        return ResponseEntity.ok(orderInfo);
+//        var sell = Order.createBuyOrder(AssetPairsEnum.AssetPairs.XBTUSDC, 44d,1);
+//        val orderInfo = new KrakenRestService().addOrder(sell);
+        return ResponseEntity.ok("Not there yet"); // TODO
     }
 
     @GetMapping(path= "/balance")
