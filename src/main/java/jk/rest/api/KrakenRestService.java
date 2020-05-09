@@ -111,8 +111,10 @@ public class KrakenRestService {
 
     public ClosedOrdersInfo getClosedOrders (double startTime, double endTime) {
         var params = new HashMap<String,Object>();
-        params.put("start", startTime);
-        params.put("end", endTime);
+        if (startTime != 0)
+            params.put("start", startTime);
+        if (endTime != 0)
+            params.put("end", endTime);
         ApiSign.availableKeys(this.properties);
         var url = KrakenEndpoints.url(KrakenEndpoints.CLOSED_ORDERS);
         var requestsEntity = ApiSign.getRequest(url, params, KrakenEndpoints.CLOSED_ORDERS, this.properties);
