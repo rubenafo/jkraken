@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 
 /**
  * Tests the different types of subscriptions
@@ -26,7 +27,7 @@ public class SubscriptionTests {
 
     @BeforeEach
     public void setup() {
-        val localPropsService = new LocalPropLoaderService();
+        val localPropsService = mock(LocalPropLoaderService.class);
         this.khandler = new KrakenWsHandler(localPropsService,"id", "url");
         this.session = mock(WebSocketSession.class);
     }

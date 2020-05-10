@@ -1,22 +1,19 @@
 package jk.wsocket.controller;
 
 import jk.rest.api.KrakenRestService;
-import jk.rest.entities.AssetPairsEnum;
-import jk.rest.entities.Order;
 import jk.rest.entities.results.AccountBalanceInfo;
 import jk.wsocket.service.KrakenWsService;
 import lombok.NonNull;
 import lombok.val;
-import lombok.var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-//@Conditional(value = KrakenAuthCondition.class)
-@Controller
+@RestController
 public class JKrakenPrivateController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JKrakenPublicController.class);

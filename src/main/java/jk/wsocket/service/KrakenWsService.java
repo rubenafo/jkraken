@@ -2,7 +2,6 @@ package jk.wsocket.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import jk.rest.tools.LocalPropLoader;
 import jk.wsocket.data.RequestValidator;
 import lombok.NonNull;
 import lombok.val;
@@ -33,7 +32,7 @@ public class KrakenWsService extends TextWebSocketHandler {
         this.tokenService = tokenService;
         this.authClient = new KrakenWsHandler(propsService, "privateEndpoint", propsService.getPrivateAPI().get());
         this.publicClient = new KrakenWsHandler(propsService,"publicEndpoint",propsService.getPublicAPI().get());
-        this.publicMode = new LocalPropLoader().keysFound();
+        this.publicMode = propsService.getPropsLoader().keysFound();
     }
 
     public void subscribe(List<String> pairs, int interval, int depth, String name) {

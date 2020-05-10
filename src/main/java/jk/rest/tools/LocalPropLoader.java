@@ -4,6 +4,7 @@ import jk.krakenex.KrakenEnums;
 import jk.wsocket.data.Logs;
 import lombok.Getter;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,16 +21,22 @@ public class LocalPropLoader {
 
     public LocalPropLoader() {
         this.props = new Properties();
-        val propertiesFile = System.getProperty("krakenkeys");
+        val propertiesFile = System.getProperty("configFile");
         if (propertiesFile == null) {
-            Logs.error("Missing jk.props file. Private methods won't work");
+            throw new RuntimeException("Missing configFile parameter (-DconfigFile=<path_to_config_file>");
         }
         try {
             val inputStream = new ByteArrayInputStream(Files.readAllBytes(Paths.get(propertiesFile)));
             props.load(inputStream);
-            Logs.info("Config variables sucessfully read from file: " + propertiesFile);
+            Logs.info("Config variables successfully read from file: " + propertiesFile);
+            if (StringUtils.isEmpty(this.getPublicAPI())) {
+                throw new RuntimeException("Error: public_ws is missing from config file");
+            }
+            if (StringUtils.isEmpty(this.getPrivateAPI())) {
+                throw new RuntimeException("Error: private_ws is missing from config file");
+            }
         } catch (IOException e) {
-            throw new RuntimeException("Invalid path for Kraken keys file: " + propertiesFile);
+            throw new RuntimeException("Missing config file: " + propertiesFile);
         }
     }
 
@@ -43,5 +50,13 @@ public class LocalPropLoader {
 
     public boolean keysFound() {
         return this.getApi() != null && this.getApiSecret() != null;
+    }
+
+    public String getPublicAPI () {
+        return this.props.getProperty(KrakenEnums.ConfigProperties.PUBLIC_ENDPOINT.getConfigName());
+    }
+
+    public String getPrivateAPI () {
+        return this.props.getProperty(KrakenEnums.ConfigProperties.PRIVATE_ENDPOINT.getConfigName());
     }
 }

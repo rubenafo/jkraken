@@ -135,8 +135,11 @@ public class SessionData {
     }
 
     public void updateSubscription(SubscriptionStatusMsg msg) {
-        val channelId = msg.getChannelName().equalsIgnoreCase("ownTrades") ? OWN_TRADES_CHANNEL :
-                msg.getChannelName().equalsIgnoreCase("openOrders") ? OPEN_ORDERS_CHANNEL : msg.getChannelID();
+        var channelId = msg.getChannelID();
+        if (msg.getChannelName() != null) {
+            channelId = msg.getChannelName().equalsIgnoreCase("ownTrades") ? OWN_TRADES_CHANNEL :
+                    msg.getChannelName().equalsIgnoreCase("openOrders") ? OPEN_ORDERS_CHANNEL : msg.getChannelID();
+        }
         if (msg.getStatus().equals("unsubscribed")) {
             this.subscribedChannels.remove(channelId);
         }
