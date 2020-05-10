@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/rubenafo/jkraken.svg?branch=master)](https://travis-ci.com/rubenafo/jkraken)
+------------
 # JKraken
 A REST server to interact with [Kraken API](https://www.kraken.com/features/api) aiming to unify Kraken WebSocket and Rst APIs in one single place.  
 JKraken provides:
