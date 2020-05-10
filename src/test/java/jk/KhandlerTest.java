@@ -52,8 +52,8 @@ public class KhandlerTest {
     }
 
     @Test
-    public void session_unsubscribes_channel() {
-        var input = "{\"channelID\":246,\"event\":\"subscriptionStatus\",\"pair\":\"XBT/EUR\",\"status\":\"unsubscribed\",\"subscription\":{\"interval\":1,\"name\":\"ohlc\"}}";
+    public void session_subscribes_channel() {
+        var input = "{\"channelID\":246,\"event\":\"subscriptionStatus\",\"pair\":\"XBT/EUR\",\"status\":\"subscribed\",\"subscription\":{\"interval\":1,\"name\":\"ohlc\"}}";
         khandler.handleTextMessage(this.session, new TextMessage(input));
         val channels = khandler.getChannels();
         Assert.assertEquals(1, channels.size());
@@ -61,12 +61,17 @@ public class KhandlerTest {
         assertEquals(246, channel.getChannelID());
         assertEquals("subscriptionStatus", channel.getEvent());
         assertEquals("XBT/EUR", channel.getPair());
-        assertEquals("unsubscribed", channel.getStatus());
+        assertEquals("subscribed", channel.getStatus());
     }
 
     @Test
     public void session_unsubscribes_private_channel() {
-        assertTrue(false);
+        val subscribed = "{\"channelName\":\"ownTrades\",\"event\":\"subscriptionStatus\",\"reqid\":306811511,\"status\":\"subscribed\",\"subscription\":{\"name\":\"ownTrades\"}}";
+        khandler.handleTextMessage(this.session, new TextMessage(subscribed));
+        assertTrue(khandler.getChannels().size() == 1);
+        val unsubscribed = "{\"channelName\":\"ownTrades\",\"event\":\"subscriptionStatus\",\"status\":\"unsubscribed\",\"subscription\":{\"name\":\"ownTrades\"}}";
+        khandler.handleTextMessage(this.session, new TextMessage(unsubscribed));
+        assertTrue(khandler.getChannels().size() == 0);
     }
 
     @Test

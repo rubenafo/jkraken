@@ -58,11 +58,15 @@ public class KrakenWsService extends TextWebSocketHandler {
         }
     }
 
-    public void unsubscribe(List<String> channelIds) {
+    public void unsubscribe(List<String> channelIds, String name) {
         var json = new ObjectMapper().createObjectNode();
         json.put("event", "unsubscribe");
-        json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(channelIds));
-        json.putObject("subscription").put("name","ticker");
+        if (!channelIds.isEmpty()) {
+            json.putArray("pair").addAll((ArrayNode) new ObjectMapper().valueToTree(channelIds));
+        }
+        val subscription = json.putObject("subscription");
+        subscription.put("name",name);
+        subscription.put("token", tokenService.getToken());
         this.publicClient.sendMessage(json.toString());
         this.authClient.sendMessage(json.toString());
     }

@@ -143,7 +143,9 @@ public class SessionData {
         if (msg.getStatus().equals("unsubscribed")) {
             this.subscribedChannels.remove(channelId);
         }
-        this.subscribedChannels.put(channelId, msg);
+        else {
+            this.subscribedChannels.put(channelId, msg);
+        }
     }
 
     public SubscriptionStatusMsg findByName (String name) {

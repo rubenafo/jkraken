@@ -2,17 +2,14 @@ package jk.wsocket.controller;
 
 import jk.rest.api.KrakenRestService;
 import jk.wsocket.data.JsonUtils;
-import jk.wsocket.service.KrakenWsService;
 import jk.wsocket.data.RequestValidator;
+import jk.wsocket.service.KrakenWsService;
 import lombok.NonNull;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MimeType;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,10 +45,19 @@ public class JKrakenPublicController {
     }
 
     @PostMapping("/unsubscribe")
-    public ResponseEntity<String> unsubscribe (@RequestParam List<String> pairs) {
+    public ResponseEntity<String> unsubscribe (
+            @RequestParam (required = false, defaultValue = "") List<String> pairs,
+            @RequestParam (required = false) String name)
+    {
         LOGGER.debug("unsubscribe");
-        this.krakenWs.unsubscribe(pairs);
-        return ResponseEntity.ok().build();
+        try {
+            RequestValidator.validateUnsubscribe(pairs, name);
+            this.krakenWs.unsubscribe(pairs, name);
+            return ResponseEntity.ok().build();
+        }
+        catch(RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @GetMapping(value="/status", produces = MediaType.APPLICATION_JSON_VALUE)
