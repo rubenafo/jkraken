@@ -8,7 +8,6 @@ import jk.wsocket.responses.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
-import lombok.var;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;

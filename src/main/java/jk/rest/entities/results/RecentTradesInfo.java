@@ -3,7 +3,6 @@ package jk.rest.entities.results;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.var;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

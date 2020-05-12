@@ -3,7 +3,6 @@ package jk;
 import jk.wsocket.service.KrakenWsHandler;
 import jk.wsocket.service.LocalPropLoaderService;
 import lombok.val;
-import lombok.var;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

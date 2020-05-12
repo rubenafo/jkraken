@@ -4,7 +4,6 @@ import jk.rest.entities.*;
 import jk.rest.entities.results.*;
 import jk.rest.tools.ApiSign;
 import jk.rest.tools.LocalPropLoader;
-import lombok.var;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -30,5 +30,8 @@ build/
 ### VS Code ###
 .vscode/
 
-.api
-/src/main/resources/jkraken.properties
+### gradle ###
+.gradle/
+gradle/
+gradlew
+gradle

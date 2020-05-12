@@ -23,7 +23,7 @@ public class LocalPropLoader {
         this.props = new Properties();
         val propertiesFile = System.getProperty("configFile");
         if (propertiesFile == null) {
-            throw new RuntimeException("Missing configFile parameter (-DconfigFile=<path_to_config_file>");
+            throw new RuntimeException("Missing configFile parameter (-DconfigFile=<path_to_config_file>)");
         }
         try {
             val inputStream = new ByteArrayInputStream(Files.readAllBytes(Paths.get(propertiesFile)));

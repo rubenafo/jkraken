@@ -3,7 +3,6 @@ package jk.rest.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.var;
 
 import java.util.HashMap;
 import java.util.List;

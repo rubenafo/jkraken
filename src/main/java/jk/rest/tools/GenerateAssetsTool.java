@@ -7,7 +7,6 @@ import com.squareup.javapoet.TypeSpec;
 import jk.rest.api.KrakenRestService;
 import jk.rest.entities.AssetPairs;
 import lombok.SneakyThrows;
-import lombok.var;
 
 import javax.lang.model.element.Modifier;
 import java.nio.file.Paths;

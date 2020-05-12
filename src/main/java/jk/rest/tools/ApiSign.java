@@ -3,7 +3,6 @@ package jk.rest.tools;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.val;
-import lombok.var;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class ApiSign {
 
-    public static String calculateSignature(String  nonce, String data, String secret, String path) {
+    public static String calculateSignature(String nonce, String data, String secret, String path) {
         var signature = "";
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -28,22 +27,23 @@ public class ApiSign {
             mac.init(new SecretKeySpec(Base64.decodeBase64(secret.getBytes()), "HmacSHA512"));
             mac.update(path.getBytes());
             signature = new String(Base64.encodeBase64(mac.doFinal(md.digest())));
-        } catch(Exception e) {}
+        } catch (Exception e) {
+        }
         return signature;
     }
 
-    public static RequestEntity<String> getRequest (String url, String path, LocalPropLoader props) {
+    public static RequestEntity<String> getRequest(String url, String path, LocalPropLoader props) {
         return getRequest(url, new HashMap<>(), path, props);
     }
 
-    public static RequestEntity<String> getRequest (String url, Map<String,Object> formData, String path, LocalPropLoader props) {
+    public static RequestEntity<String> getRequest(String url, Map<String, Object> formData, String path, LocalPropLoader props) {
         var headers = new HttpHeaders();
         long nonce = System.currentTimeMillis();
         var data = formData.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue() + "&").collect(Collectors.joining());
         data += "nonce=" + nonce;
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("API-Key", props.getApi());
-        headers.add("API-Sign", ApiSign.calculateSignature(nonce +"", data, props.getApiSecret(), path));
+        headers.add("API-Sign", ApiSign.calculateSignature(nonce + "", data, props.getApiSecret(), path));
         headers.add("User-Agent", "Kraken REST API");
         try {
             return new RequestEntity<String>(data, headers, HttpMethod.POST, new URI(url));
@@ -57,10 +57,10 @@ public class ApiSign {
             throw new RuntimeException("Missing auth keys, private API request won't work");
     }
 
-    public static String getWebSocketAuthToken () {
+    public static String getWebSocketAuthToken() {
         val request = getRequest("https://api.kraken.com/0/private/GetWebSocketsToken", Map.of(), "/0/private/GetWebSocketsToken", new LocalPropLoader());
         ResponseEntity<String> response = new RestTemplate().postForEntity("https://api.kraken.com/0/private/GetWebSocketsToken", request, String.class);
-        val body =  response.getBody();
+        val body = response.getBody();
         try {
             val json = new ObjectMapper().readValue(body, Map.class);
             val token = ((Map) json.get("result")).get("token");

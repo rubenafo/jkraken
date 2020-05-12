@@ -4,7 +4,6 @@ package jk.wsocket.data;
 import jk.wsocket.responses.*;
 import lombok.Data;
 import lombok.val;
-import lombok.var;
 import tech.tablesaw.api.*;
 
 import java.time.format.DateTimeFormatter;
