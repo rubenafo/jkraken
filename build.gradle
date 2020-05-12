@@ -7,10 +7,8 @@ plugins {
     id 'idea'
     id 'java'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.2.7.RELEASE'
     id 'com.github.kt3k.coveralls' version '2.8.4'
 }
-apply plugin: 'io.spring.dependency-management'
 
 jacocoTestReport {
     reports {
