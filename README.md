@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/rubenafo/jkraken.svg?branch=master)](https://travis-ci.com/rubenafo/jkraken)
+[![Coverage Status](https://coveralls.io/repos/github/rubenafo/jkraken/badge.svg?branch=master)](https://coveralls.io/github/rubenafo/jkraken?branch=master)
 ------------
 # JKraken
 A REST server to interact with [Kraken API](https://www.kraken.com/features/api) aiming to unify Kraken WebSocket and Rst APIs in one single place.  
