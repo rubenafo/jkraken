@@ -18,7 +18,7 @@ JKraken exposes endpoints to subscribe to Kraken channels using [websockets](htt
 
 
 ### Documentation
-
+Setup and more: [here](https://github.com/rubenafo/jkraken/wiki)  
 Kraken API implemented so far is documented here: [Kraken API support](https://github.com/rubenafo/jkraken/wiki/API-Support)
 
 
